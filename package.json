@@ -1,0 +1,62 @@
+{
+  "name": "node-es6-restapi-boilerplate",
+  "version": "0.0.1",
+  "description": "Express boilerplate for building RESTful APIs",
+  "author": "keviveks <keviveks@gmail.com>",
+  "main": "src/index.js",
+  "private": false,
+  "license": "MIT",
+  "engines": {
+    "node": ">=8",
+    "yarn": "*"
+  },
+  "scripts": {
+    "start": "nodemon ./index.js",
+    "lint": "eslint **/*.js --ignore-path .gitignore --ignore-pattern internals/scripts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:keviveks/node-starter-boilerplate.git"
+  },
+  "keywords": [
+    "node",
+    "node.js",
+    "express",
+    "mongodb",
+    "mongoose",
+    "passport",
+    "es6",
+    "es7",
+    "es8",
+    "es2017",
+    "eslint",
+    "REST",
+    "API",
+    "boilerplate",
+    "generator",
+    "starter project"
+  ],
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.18.3",
+    "compression": "^1.7.2",
+    "cors": "^2.8.4",
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "helmet": "^3.12.1",
+    "method-override": "^2.3.10",
+    "mongoose": "^5.1.4",
+    "morgan": "^1.9.0",
+    "nodemailer": "^4.6.5",
+    "passport": "^0.4.0",
+    "query-types": "^0.1.4",
+    "winston": "^2.4.2",
+    "winston-daily-rotate-file": "^3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    "nodemon": "^1.17.5"
+  }
+}
