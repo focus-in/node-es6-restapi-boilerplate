@@ -4,14 +4,20 @@ const fs = require('fs');
 const path = require('path');
 const { env, log } = require('../env');
 
+// log directory path
 const logDirectory = path.join(process.cwd(), log.path);
+
 // ensure log directory exists
 if (!fs.existsSync(logDirectory)) {
   fs.mkdirSync(logDirectory);
 }
 
+// log file with full log path
 const logFile = `${logDirectory}/${log.file}`;
 
+/**
+ * Instantiate Winston with Console & File transports by defualt
+ */
 const logger = new (winston.Logger)({
   level: log.level,
   transports: [
@@ -20,6 +26,7 @@ const logger = new (winston.Logger)({
   ],
 });
 
+// Check log type for log file daily rotate
 if (log.type === 'daily') {
   // remove the current file transport
   logger.remove(winston.transports.File);
@@ -41,8 +48,5 @@ if (env !== 'development') {
   logger.remove(winston.transports.Console);
 }
 
-logger.info('should print something');
-logger.error('there is an error here');
-logger.warn('even we have warning messages');
-
+// export the winston logger object
 module.exports = logger;

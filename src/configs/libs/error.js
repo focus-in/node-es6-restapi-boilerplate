@@ -3,7 +3,7 @@ const logger = require('./logger');
 /**
  * Create own error handler class to log the error messages
  */
-class LogError extends Error {
+class AppError extends Error {
   constructor(message, status) {
     // Calling parent constructor of base Error class.
     super(message);
@@ -21,4 +21,4 @@ class LogError extends Error {
   }
 }
 
-module.exports = LogError;
+module.exports = AppError;

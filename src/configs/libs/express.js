@@ -9,19 +9,29 @@ const passport = require('passport');
 const queryType = require('query-types');
 
 const logger = require('./logger');
-const coreRoutes = require('../../core/routes/core.route');
+const v1Routes = require('../../core/routes/v1.route');
 
+/**
+ * Init - adding application variables to app object
+ * @param {Object} app express app object
+ * @param {Class} config config class with env properties & methods
+ */
 module.exports.initLocalVariables = (app, config) => {
   const { env, packageJson } = config;
   app.title = packageJson.name;
   app.env = env.env;
-  app.port = env.port;
   app.server = env.app.url;
   app.dburi = env.db.uri;
   app.version = packageJson.version;
   app.engines = packageJson.engines;
+  app.port = env.port;
 };
 
+/**
+ * Init dependent middlewares to app object
+ * @param {Object} app express app object
+ * @param {Class} config config class with env properties & methods
+ */
 module.exports.initMiddlewares = (app, config) => {
   const { env, morganLogStream } = config;
   // request logging. dev: console | production: file
@@ -48,12 +58,17 @@ module.exports.initMiddlewares = (app, config) => {
   app.use(queryType.middleware());
 };
 
+/**
+ * Initialize passport authentication
+ * @param {Object} app express app object
+ */
 module.exports.iniAuthentication = (app) => {
   app.use(passport.initialize());
 };
 
 /**
- * Init error handling
+ * Error Handler with log & error response
+ * @param {Object} app express app object
  */
 module.exports.initErrorHandler = (app) => {
   app.use((err, req, res, next) => {
@@ -66,23 +81,25 @@ module.exports.initErrorHandler = (app) => {
   });
 };
 
+/**
+ * Initialize all app module routers from core v1 router
+ * @param {Object} app express app object
+ */
 module.exports.initRouter = (app) => {
+  // mount api v1 routes
+  app.use('/api/v1', v1Routes);
+
   // home route
   app.use('/', (req, res) => {
     res.write('Welcome to keviveks Node Starter Boilerplate');
+    res.end();
   });
-
-  // Initialize express router
-  // const router = express.Router();
-
-  // Get all v1 Core Router
-  // const routes = coreRoutes.init(router);
-  // mount api v1 routes
-  // router.use('/api/v1', routes);
-  // api/v1/docs
-  // router.use('/api/v1/docs', express.static('docs'));
 };
 
+/**
+ * Initialize the app with middlewares
+ * @param {Class} config config class with env properties & methods
+ */
 module.exports.init = (config) => {
   // Initialize express app & other middlewares
   const app = express();
@@ -105,19 +122,23 @@ module.exports.init = (config) => {
   return app;
 };
 
+/**
+ * Express to listen in server port
+ * @param {Object} app express app object
+ * @param {Object} conn mongoose connection object
+ */
 module.exports.listen = (app, conn) => {
   if (conn) {
-    console.log('=====its time to list the app=====');
-    console.log(app.port);
     app.listen(app.port, () => {
-      logger.error('--');
-      logger.error(app.title);
-      logger.error();
-      logger.error(`Environment:     ${app.env}`);
-      logger.error(`Server:          ${app.server}`);
-      logger.error(`Database:        ${app.dburi}`);
-      logger.error(`App version:     ${app.version}`);
-      logger.error('--');
+      logger.info('--');
+      logger.info(app.title);
+      logger.info();
+      logger.info(`Environment:     ${app.env}`);
+      logger.info(`Server:          ${app.server}`);
+      logger.info(`Database:        ${app.dburi}`);
+      logger.info(`App version:     ${app.version}`);
+      logger.info(`Started At:      ${new Date()}`);
+      logger.info('--');
     });
   }
 };

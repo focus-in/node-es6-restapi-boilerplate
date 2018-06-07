@@ -12,20 +12,26 @@ process.on('uncaughtException', (err) => {
   logger.error(err);
 });
 
+/**
+ * Capture the log with exit code on process exit
+ */
 process.on('exit', (code) => {
   logger.log(`About to exit with code: ${code}`);
 });
 
+/**
+ * Start the application with express & mongoose
+ */
 module.exports.start = async () => {
   try {
+    // Init express middlewares & error handlers & routers
     const app = await express.init(config);
-    console.log('-------------GOT THE APP---------------------');
-    console.log(app);
+    // connect mongodb with mongoose
     const conn = await mongoose.connect(config.env);
-    console.log('---------GOT THE CONNECTION-------------');
-    console.log(conn);
+    // express start & listen to server port
     await express.listen(app, conn);
   } catch (error) {
+    // log the error & exit the process on any errors
     logger.error(error);
     process.exit(1);
   }

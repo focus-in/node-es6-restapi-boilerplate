@@ -5,10 +5,16 @@ const dotenv = require('dotenv');
  */
 dotenv.config();
 
-const appUrl = `${(process.env.HTTPS) ? 'https' : 'http'}://${process.env.DOMAIN}:${process.env.PORT}`;
+// app url from domain & port env variables
+const appUrl = `${(process.env.HTTPS === true) ? 'https' : 'http'}://${process.env.DOMAIN}:${process.env.PORT}`;
+// check & define db name for test environment
 const mongoName = `${process.env.MONGO_NAME}${(process.env.NODE_ENV === 'test') ? '-test' : ''}`;
+// exact mongodb uri with db name
 const mongoUri = `${process.env.MONGO_URI}/${mongoName}`;
 
+/**
+ * Export environment variables
+ */
 module.exports = {
   env: process.env.NODE_ENV,
   port: process.env.PORT,
@@ -17,7 +23,7 @@ module.exports = {
   },
   db: {
     name: mongoName,
-    uri: 'mongodb://127.0.0.1:27017/testdb',
+    uri: mongoUri,
     options: {
       keepAlive: 1,
     },

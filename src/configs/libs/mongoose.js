@@ -12,6 +12,7 @@ mongoose.connection.on('error', (err) => {
 
 /**
  * Mongoose Connection Handler
+ * @param {Object} env environment variables
  */
 module.exports.connect = ({ env, db }) => {
   // print mongoose logs only in dev env
@@ -23,11 +24,8 @@ module.exports.connect = ({ env, db }) => {
     // mongoose connect
     mongoose.connect(db.uri, db.options)
       .then((conn) => {
-        console.log('---im not sure weather it is connection');
         resolve(conn);
       }, (err) => {
-        console.log('------MONGOOSE ERROR--------');
-        console.log(err);
         reject(err);
       });
   });
