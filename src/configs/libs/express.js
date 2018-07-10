@@ -9,7 +9,8 @@ const passport = require('passport');
 const queryType = require('query-types');
 
 const logger = require('./logger');
-const v1Routes = require('../../core/routes/v1.route');
+const error = require('./error');
+// const coreRoutes = require('../../core/routes/core.route');
 
 /**
  * Init - adding application variables to app object
@@ -20,11 +21,11 @@ module.exports.initLocalVariables = (app, config) => {
   const { env, packageJson } = config;
   app.title = packageJson.name;
   app.env = env.env;
+  app.port = env.port;
   app.server = env.app.url;
   app.dburi = env.db.uri;
   app.version = packageJson.version;
   app.engines = packageJson.engines;
-  app.port = env.port;
 };
 
 /**
@@ -54,7 +55,7 @@ module.exports.initMiddlewares = (app, config) => {
   // enable CORS - Cross Origin Resource Sharing
   app.use(cors());
 
-  // query string in req.query object
+  // query string for req.query object
   app.use(queryType.middleware());
 };
 
@@ -62,7 +63,7 @@ module.exports.initMiddlewares = (app, config) => {
  * Initialize passport authentication
  * @param {Object} app express app object
  */
-module.exports.iniAuthentication = (app) => {
+module.exports.initAuthentication = (app) => {
   app.use(passport.initialize());
 };
 
@@ -73,11 +74,19 @@ module.exports.iniAuthentication = (app) => {
 module.exports.initErrorHandler = (app) => {
   app.use((err, req, res, next) => {
     // If the error object doesn't exists
-    if (!err) {
+    if (!err && next) {
       return next();
     }
+    // format the error response with error object
+    const response = error.errorResponse(err);
     // Log it
-    return logger.error(err.stack);
+    logger.error('--- ERROR ---');
+    logger.error(`Request: ${req.protocol}://${req.get('host')}${req.originalUrl}`);
+    logger.error(`Response: ${JSON.stringify(response)}`);
+    logger.error(`User: ${(req.user) ? JSON.stringify(req.user) : ''}`);
+    logger.error('--- ERROR ---');
+    // error response with status code
+    return res.status(response.status).send(response);
   });
 };
 
@@ -86,14 +95,23 @@ module.exports.initErrorHandler = (app) => {
  * @param {Object} app express app object
  */
 module.exports.initRouter = (app) => {
-  // mount api v1 routes
-  app.use('/api/v1', v1Routes);
-
   // home route
   app.use('/', (req, res) => {
     res.write('Welcome to keviveks Node Starter Boilerplate');
-    res.end();
   });
+
+  // Initialize express router
+  // const router = express.Router();
+
+  /**
+   * TODO: load all the routes in core with single express router instance
+   */
+  // Get all v1 Core Router
+  // const routes = coreRoutes.init(router);
+  // mount api v1 routes
+  // router.use('/api/v1', coreRoutes);
+  // api/v1/docs
+  // router.use('/api/v1/docs', express.static('docs'));
 };
 
 /**
