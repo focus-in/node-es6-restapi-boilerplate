@@ -17,13 +17,27 @@ UserSchema.pre('save', async (next) => {
  * Use static methods with model
  */
 UserSchema.statics = {
+  /**
+   * Schema fields default enum values
+   */
   enum: UserEnum,
+  /**
+   * Schema secure fields
+   */
+  secureFields: ['password', 'activate', 'reset', 'services'],
+
+  refSchemas: ['Address', 'createdBy'],
 };
 
 /**
  * Use methods with user object
  */
 UserSchema.method({
+  // withCreatedBy: (selectFields) => {
+  //   const _this = this;
+  //   this.populate('createdBy')
+  //   // this.deepPopulate('childs.subject.data', callback);
+  // },
 
 });
 

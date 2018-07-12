@@ -37,7 +37,7 @@ const UserSchema = new mongoose.Schema({
     maxlength: 10,
   },
   // _address: [{
-  //   type: mongoose.Types.ObjectId,
+  //   type: mongoose.Schema.Types.ObjectId,
   //   // ref: 'Address',
   // }],
   gender: {
@@ -68,10 +68,10 @@ const UserSchema = new mongoose.Schema({
     default: 'local',
   },
   // services: {
-  //   facebook: { type: mongoose.Types.Mixed },
-  //   google: { type: mongoose.Types.Mixed },
-  //   twitter: { type: mongoose.Types.Mixed },
-  //   linkedin: { type: mongoose.Types.Mixed },
+  //   facebook: { type: mongoose.Schema.Types.Mixed },
+  //   google: { type: mongoose.Schema.Types.Mixed },
+  //   twitter: { type: mongoose.Schema.Types.Mixed },
+  //   linkedin: { type: mongoose.Schema.Types.Mixed },
   // },
   activate: {
     token: {
@@ -100,6 +100,10 @@ const UserSchema = new mongoose.Schema({
   deleteFlag: {
     type: Boolean,
     default: false,
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   },
 }, {
   timestamps: true,

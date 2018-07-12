@@ -28,4 +28,13 @@ module.exports = {
       bio: Joi.string(),
     },
   },
+  list: {
+    param: {
+      select: Joi.string().trim().required(),
+      order: Joi.string().trim().required(),
+      sort: Joi.string().trim().email().required(),
+      offset: Joi.string().trim().regex(/[a-zA-Z0-9]{3,30}/).required(),
+      limit: Joi.number().required(),
+    },
+  },
 };
