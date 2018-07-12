@@ -32,6 +32,7 @@ module.exports = {
     uri: mongoUri,
     options: {
       keepAlive: 1,
+      useNewUrlParser: true,
     },
   },
   log: {

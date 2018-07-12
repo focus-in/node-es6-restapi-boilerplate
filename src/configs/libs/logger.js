@@ -36,10 +36,8 @@ if (log.type === 'daily') {
     datePattern: 'YYYY-MM-DD',
     zippedArchive: true,
     level: log.level,
-    colorize: true,
     filename: `${logDirectory}/app-%DATE%.log`,
     maxSize: '5m',
-    maxFiles: '10',
   });
 }
 

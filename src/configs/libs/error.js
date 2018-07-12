@@ -30,7 +30,9 @@ const errorDuplicate = (err) => {
 
 const errorMessage = (err) => {
   let message;
-  if (err.code) {
+  if (err.message) {
+    ({ message } = err);
+  } else if (err.code) {
     switch (err.code) {
       case 'UNSUPPORTED_MEDIA_TYPE':
         message = 'Unsupported filetype';
@@ -42,16 +44,10 @@ const errorMessage = (err) => {
         message = 'Missing `newProfilePicture` field';
         break;
       default:
-        message = 'Something went wrong';
+        message = 'Something went wrong!';
     }
-  } else if (err.message && !err.errors) {
-    ({ message } = err);
   } else {
-    err.errors.each((k, v) => {
-      if (v.message) {
-        ({ message } = v);
-      }
-    });
+    message = 'Oops, Something went wrong!';
   }
   return message;
 };

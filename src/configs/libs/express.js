@@ -7,10 +7,11 @@ const cors = require('cors');
 const helmet = require('helmet');
 const passport = require('passport');
 const queryType = require('query-types');
+// const validation = require('express-validation');
 
 const logger = require('./logger');
 const error = require('./error');
-// const coreRoutes = require('../../core/routes/core.route');
+const CoreRoutes = require('../../core/routers/core.router');
 
 /**
  * Init - adding application variables to app object
@@ -68,38 +69,10 @@ module.exports.initAuthentication = (app) => {
 };
 
 /**
- * Error Handler with log & error response
- * @param {Object} app express app object
- */
-module.exports.initErrorHandler = (app) => {
-  app.use((err, req, res, next) => {
-    // If the error object doesn't exists
-    if (!err && next) {
-      return next();
-    }
-    // format the error response with error object
-    const response = error.errorResponse(err);
-    // Log it
-    logger.error('--- ERROR ---');
-    logger.error(`Request: ${req.protocol}://${req.get('host')}${req.originalUrl}`);
-    logger.error(`Response: ${JSON.stringify(response)}`);
-    logger.error(`User: ${(req.user) ? JSON.stringify(req.user) : ''}`);
-    logger.error('--- ERROR ---');
-    // error response with status code
-    return res.status(response.status).send(response);
-  });
-};
-
-/**
  * Initialize all app module routers from core v1 router
  * @param {Object} app express app object
  */
 module.exports.initRouter = (app) => {
-  // home route
-  app.use('/', (req, res) => {
-    res.write('Welcome to keviveks Node Starter Boilerplate');
-  });
-
   // Initialize express router
   // const router = express.Router();
 
@@ -109,9 +82,41 @@ module.exports.initRouter = (app) => {
   // Get all v1 Core Router
   // const routes = coreRoutes.init(router);
   // mount api v1 routes
-  // router.use('/api/v1', coreRoutes);
+  app.use('/api/v1', CoreRoutes);
   // api/v1/docs
   // router.use('/api/v1/docs', express.static('docs'));
+
+  // home route
+  app.use('/', (req, res) => {
+    res.send('Welcome to keviveks Node Starter Boilerplate');
+  });
+};
+
+/**
+ * Error Handler with log & error response
+ * @param {Object} app express app object
+ */
+module.exports.initErrorHandler = (app) => {
+  app.use((err, req, res, next) => {
+    // If the error object doesn't exists
+    if (!err && next) {
+      return next();
+    }
+    // specific for validation errors
+    // if (err instanceof validation.ValidationError) {
+    //   return res.status(err.status).json(err);
+    // }
+    // format the error response with error object
+    const errorResponse = error.errorResponse(err);
+    // Log it
+    logger.error('--- ERROR ---');
+    logger.error(`Request: ${req.protocol}://${req.get('host')}${req.originalUrl}`);
+    logger.error(`Error: ${JSON.stringify(errorResponse)}`);
+    logger.error(`User: ${(req.user) ? JSON.stringify(req.user) : ''}`);
+    logger.error('--- ERROR ---');
+    // error response with status code
+    return res.status(errorResponse.status).send(errorResponse);
+  });
 };
 
 /**
@@ -129,13 +134,13 @@ module.exports.init = (config) => {
   this.initMiddlewares(app, config);
 
   // enable authentication
-  this.iniAuthentication(app);
-
-  // init error handler
-  this.initErrorHandler(app);
+  this.initAuthentication(app);
 
   // init router
   this.initRouter(app);
+
+  // init error handler
+  this.initErrorHandler(app);
 
   return app;
 };
