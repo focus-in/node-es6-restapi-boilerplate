@@ -146,6 +146,35 @@ module.exports.init = (config) => {
 };
 
 /**
+ * load all the authentication strategies
+ * @param {Object} app app object
+ * @param {Object} config config objct
+ */
+// module.exports.loadStrategies = (app, config) => {
+//   require('../strategies/jwt.strategy');
+// };
+
+/**
+ * Load the app with other loaders
+ * @param {Class} config config class with env properties & methods
+ */
+module.exports.load = (app, config) => {
+  // load all the modules model file
+  // this.loadModels(app, config);
+
+  // load all the router files to define route
+  // this.loadRouters(app, config);
+
+  // load all module specific configs
+  // this.loadConfigs(app);
+
+  // load all the authentication strategies
+  // this.loadStrategies(app, config);
+
+  return app;
+};
+
+/**
  * Express to listen in server port
  * @param {Object} app express app object
  * @param {Object} conn mongoose connection object

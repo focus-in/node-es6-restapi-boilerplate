@@ -39,6 +39,15 @@ UserSchema.method({
   //   // this.deepPopulate('childs.subject.data', callback);
   // },
 
+  securedUser(secureFields) {
+    const _this = this;
+    // delete all the secure fields
+    secureFields.forEach((secureField) => {
+      delete _this[secureField];
+    });
+    // return after removed secure fields
+    return _this;
+  },
 });
 
 module.exports = mongoose.model('User', UserSchema);
