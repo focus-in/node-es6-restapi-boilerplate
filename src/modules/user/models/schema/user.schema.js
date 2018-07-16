@@ -53,6 +53,9 @@ const UserSchema = new mongoose.Schema({
     minlength: 6,
     maxlength: 128,
   },
+  salt: {
+    type: String,
+  },
   phone: {
     type: Number,
     index: true,

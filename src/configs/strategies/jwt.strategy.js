@@ -12,7 +12,7 @@ const { auth } = require('../env');
 
 module.exports.init = () => {
   // Use local strategy
-  passport.use('auth-jwt', new LocalStrategy({
+  passport.use('local', new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password',
   }, (email, password, next) => {

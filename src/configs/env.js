@@ -37,9 +37,10 @@ module.exports = {
   },
   auth: {
     session: false,
-    salt: '',
-    saltRound: 8, // ~40 hashes/sec
+    secret: '',
+    secretRound: 8, // ~40 hashes/sec
     expiresIn: 2880, // 2 days in minutes
+    refreshTill: 30, // 30 days
   },
   log: {
     format: process.env.LOG_FORMAT,

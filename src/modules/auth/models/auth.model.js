@@ -1,15 +1,34 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
 const moment = require('moment');
-// const jwt = require('jwt-simple');
+const jwt = require('jwt-simple');
 
 const AuthSchema = require('./schema/auth.schema');
-const { secret, expiresIn } = require('../../../configs/config').env;
+const { auth } = require('../../../configs/config').env;
 
 /**
  * Auth object methods
  */
 AuthSchema.statics = {
+
+  generateTokens(user) {
+    const token = this.accessToken(user);
+    const refreshToken = this.refreshToken(user);
+
+    // save the generated token
+    const tokenObject = new this({
+      token,
+      refreshToken,
+      expires: moment().add(auth.refreshTill, 'days').toDate(),
+    });
+    tokenObject.save();
+
+    return {
+      token,
+      refreshToken,
+      expiresIn: auth.expiresIn,
+    };
+  },
 
   /**
    * Generate user access token
@@ -17,13 +36,16 @@ AuthSchema.statics = {
    * @param {User} user
    * @returns {accessToken}
    */
-  accessToken: (user) => {
+  accessToken(user) {
+    // NOTE: access secret concat of user salt & unique secret
+    const accessSecret = `${user.salt}${auth.secret}`;
+    // payload
     const playload = {
-      exp: moment().add(expiresIn, 'minutes').unix(),
-      iat: moment().unix(),
-      sub: user._id,
+      expiredAt: moment().add(auth.expiresIn, 'minutes').unix(),
+      createdAt: moment().unix(),
+      _id: user._id,
     };
-    return jwt.encode(playload, secret);
+    return jwt.encode(playload, accessSecret);
   },
 
   /**
@@ -32,16 +54,9 @@ AuthSchema.statics = {
    * @param {User} user
    * @returns {refreshToken}
    */
-  refreshToken: (user) => {
-    const userId = user._id;
-    const userEmail = user.email;
-    const refreshToken = `${userId}.${crypto.randomBytes(40).toString('hex')}`;
-    const expires = moment().add(30, 'days').toDate();
-    const tokenObject = new this({
-      refreshToken, userId, userEmail, expires,
-    });
-    tokenObject.save();
-    return tokenObject.refreshToken;
+  refreshToken(user) {
+    const token = `${user._id}.${crypto.randomBytes(30).toString('hex')}`;
+    return token;
   },
 
 };

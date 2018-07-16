@@ -2,6 +2,7 @@ const HttpStatus = require('http-status');
 const passport = require('passport');
 
 const UserModel = require('../../user/models/user.model');
+const AuthModel = require('../models/auth.model');
 
 /**
  * User email signup
@@ -23,14 +24,22 @@ exports.signup = async (req, res, next) => {
  */
 exports.signin = async (req, res, next) => {
   try {
-    passport.authenticate('auth-jwt', (err, user, info) => {
+    passport.authenticate('local', (err, user, info) => {
       if (err || !user) {
-        res.status(HttpStatus.UNAUTHORIZED).send(info);
+        err.status = HttpStatus.UNAUTHORIZED;
+        err.info = info;
+        return next(err);
       }
-
-      req.user = user.securedUser();
-      res.status(HttpStatus.OK).send(req.user);
-    });
+      // remove all the secured fields from user object
+      req.user = user.securedUser(UserModel.secureFields);
+      // generate user auth tokens
+      const token = AuthModel.generateTokens(req.user);
+      // return user auth reponse
+      return res.status(HttpStatus.OK).send({
+        token,
+        user: req.user,
+      });
+    })(req, res, next);
   } catch (error) {
     next(error);
   }

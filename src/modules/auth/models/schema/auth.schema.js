@@ -10,20 +10,13 @@ const AuthSchema = new mongoose.Schema({
     enum: ['local', 'google', 'facebook', 'twitter'],
     default: 'local',
   },
-  refreshToken: {
+  token: {
     type: String,
     required: true,
     index: true,
   },
-  _userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-    index: true,
-  },
-  userEmail: {
-    type: 'String',
-    ref: 'User',
+  refreshToken: {
+    type: String,
     required: true,
     index: true,
   },

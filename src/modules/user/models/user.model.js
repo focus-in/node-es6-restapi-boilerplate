@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const UserEnum = require('../utils/user.enum');
 const UserSchema = require('./schema/user.schema');
 const { auth } = require('../../../configs/config').env;
@@ -10,10 +11,11 @@ const { auth } = require('../../../configs/config').env;
  * - validations
  * - virtuals
  */
-UserSchema.pre('save', async (next) => {
+UserSchema.pre('save', function save(next) {
   // hash password before save
-  if (this.password && this.isModified('password')) {
+  if (this.password) {
     this.password = this.hashPassword(this.password);
+    this.salt = crypto.randomBytes(16).toString('base64');
   }
   return next();
 });
@@ -29,7 +31,7 @@ UserSchema.statics = {
   /**
    * Schema secure fields
    */
-  secureFields: ['password', 'activate', 'reset', 'services'],
+  secureFields: ['password', 'secret', 'activate', 'reset', 'services'],
 
   refSchemas: ['Address', 'createdBy'],
 };
@@ -45,13 +47,14 @@ UserSchema.method({
   // },
 
   securedUser(secureFields) {
-    const _this = this;
     // delete all the secure fields
     secureFields.forEach((secureField) => {
-      delete _this[secureField];
+      // HACK: delete not working set the values as undefined!
+      this[secureField] = undefined;
+      delete this[secureField];
     });
     // return after removed secure fields
-    return _this;
+    return this;
   },
 
   /**
