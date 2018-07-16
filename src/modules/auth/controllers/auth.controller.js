@@ -5,8 +5,11 @@ const UserModel = require('../../user/models/user.model');
 const AuthModel = require('../models/auth.model');
 
 /**
- * User email signup
- * @public
+ * User signup - email registration
+ *
+ * @param {object} req request object
+ * @param {object} res response object
+ * @param {Function} next next function handler
  */
 exports.signup = async (req, res, next) => {
   try {
@@ -19,8 +22,11 @@ exports.signup = async (req, res, next) => {
 };
 
 /**
- * User email signin
- * @public
+ * User signin - email login
+ *
+ * @param {object} req request object
+ * @param {object} res response object
+ * @param {Function} next next function handler
  */
 exports.signin = async (req, res, next) => {
   try {
@@ -42,5 +48,88 @@ exports.signin = async (req, res, next) => {
     })(req, res, next);
   } catch (error) {
     next(error);
+  }
+};
+
+/**
+ * User activate - email registration
+ *
+ * @param {object} req request object
+ * @param {object} res response object
+ * @param {Function} next next function handler
+ */
+exports.activate = async (req, res, next) => {
+  try {
+    const user = UserModel.activate(req.body);
+    // TODO: sent activated successfully email
+    res.status(HttpStatus.CREATED).json(user.securedUser(UserModel.secureFields));
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * User reactivate - email registration
+ *
+ * @param {object} req request object
+ * @param {object} res response object
+ * @param {Function} next next function handler
+ */
+exports.reactivate = async (req, res, next) => {
+  try {
+    const user = UserModel.reactivate(req.body);
+    // TODO: sent activation token mail
+    res.status(HttpStatus.CREATED).json(user.securedUser(UserModel.secureFields));
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Returns a new jwt when given a valid refresh token
+ * @public
+ */
+exports.refresh = async (req, res, next) => {
+  try {
+    const { token, refreshToken } = req.body;
+    const refreshObject = await AuthModel.findOneAndRemove({
+      token,
+      refreshToken,
+    });
+    const user = await UserModel.findById(refreshObject._userId);
+    const response = this.tokenResponse(user);
+    return res.json(response);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Generate reset token and send reset link to users email
+ * @public
+ */
+exports.forgot = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const user = await UserModel.findAndReset(email);
+    // TODO: sent reset mail
+    this.resetMail(user);
+    return res.json({ message: 'Password reset link sent to registered email address' });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Update user password with reset token
+ * @public
+ */
+exports.reset = async (req, res, next) => {
+  try {
+    const { resetToken, newPassword } = req.body;
+    await UserModel.findAndResetPassword(resetToken, newPassword);
+    return res.json({ message: 'Password updated successfully, please login with new password' });
+  } catch (error) {
+    return next(error);
   }
 };

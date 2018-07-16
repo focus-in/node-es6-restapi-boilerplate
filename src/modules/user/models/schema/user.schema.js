@@ -103,7 +103,7 @@ const UserSchema = new mongoose.Schema({
     token: {
       type: String,
     },
-    expireAt: {
+    expiresAt: {
       type: Date,
     },
   },
@@ -111,7 +111,7 @@ const UserSchema = new mongoose.Schema({
     token: {
       type: String,
     },
-    expireAt: {
+    expiresAt: {
       type: Date,
     },
   },

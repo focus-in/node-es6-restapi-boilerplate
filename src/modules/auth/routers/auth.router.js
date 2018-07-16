@@ -6,14 +6,14 @@ const AuthValidator = require('../validators/auth.validator');
 
 const router = express.Router();
 
-router
-  .route('/signup')
+router.route('/signup')
   /**
    * @api {post} /signup Signup user
    * @apiDescription Register user with direct email address
    * @apiVersion 0.0.1
    * @apiName EmailSignup
    * @apiGroup Auth
+   * @apiPermission public
    *
    * @apiParam  {String}          firstName   User's first name
    * @apiParam  {String}          lastName    User's last name
@@ -35,14 +35,14 @@ router
    */
   .post(validate(AuthValidator.signup), AuthController.signup);
 
-router
-  .route('/signin')
+router.route('/signin')
   /**
-   * @api {post} /signin SigninUser
+   * @api {post} /signin Signin User
    * @apiDescription User login with direct email address
    * @apiVersion 0.0.1
    * @apiName EmailSignin
    * @apiGroup Auth
+   * @apiPermission public
    *
    * @apiParam  {String}          email       User's email
    * @apiParam  {String{6..128}}  password    User's password
@@ -61,5 +61,100 @@ router
    * @apiError (Forbidden 403)     Forbidden        Only admins can create the data
    */
   .post(validate(AuthValidator.signin), AuthController.signin);
+
+router.route('/activate/:token')
+  /**
+   * @api {get} /activate/:token Activate user registration
+   * @apiDescription Activate user with token sent in email or phone
+   * @apiVersion 0.0.1
+   * @apiName ActivateUser
+   * @apiGroup Auth
+   * @apiPermission public
+   *
+   * @apiParam  {String}  token         User's activate token
+   *
+   * @apiSuccess {String}  message     User activated successfully
+   *
+   * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
+   * @apiError (Unauthorized 401)  Unauthorized     Incorrect email or refreshToken
+   */
+  .get(validate(AuthValidator.activate), AuthController.activate);
+
+router.route('/reactivate')
+  /**
+   * @api {post} /reactivate Resend activation token to registered user
+   * @apiDescription Resend activation token to registered user in email or phone
+   * @apiVersion 0.0.1
+   * @apiName ReActivateUser
+   * @apiGroup Auth
+   * @apiPermission public
+   *
+   * @apiParam   {String}  email      User's email
+   *
+   * @apiSuccess {String}  message    Activation token sent to registered email address
+   *
+   * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
+   * @apiError (Unauthorized 401)  Unauthorized     Incorrect email or refreshToken
+   */
+  .post(validate(AuthValidator.reactivate), AuthController.reactivate);
+
+router.route('/refresh')
+  /**
+   * @api {post} /refresh Refresh Auth Token
+   * @apiDescription Refresh expired accessToken
+   * @apiVersion 0.0.1
+   * @apiName RefreshToken
+   * @apiGroup Auth
+   * @apiPermission public
+   *
+   * @apiParam  {String}  token         User's access token
+   * @apiParam  {String}  refreshToken  Refresh token to reset access token
+   *
+   * @apiSuccess {String}  tokenType     Access Token's type
+   * @apiSuccess {String}  accessToken   Authorization Token
+   * @apiSuccess {String}  refreshToken  Token to get a new accessToken after expiration time
+   * @apiSuccess {Number}  expiresIn     Access Token's expiration time in miliseconds
+   *
+   * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
+   * @apiError (Unauthorized 401)  Unauthorized     Incorrect email or refreshToken
+   */
+  .post(validate(AuthValidator.refresh), AuthController.refresh);
+
+router.route('/forgot')
+  /**
+   * @api {post} /forgot Forgot password
+   * @apiDescription Forgot password request to generate reset token to update user password
+   * @apiVersion 0.0.1
+   * @apiName ForgotPassword
+   * @apiGroup Auth
+   * @apiPermission public
+   *
+   * @apiParam  {String}    email     User's email address
+   *
+   * @apiSuccess {String}   message   Reset token sent to registered email
+   *
+   * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
+   * @apiError (Unauthorized 401)  Unauthorized     Incorrect email
+   */
+  .post(validate(AuthValidator.forgot), AuthController.forgot);
+
+router.route('/reset/:token')
+  /**
+   * @api {post} /reset/:token Reset user forgot Password
+   * @apiDescription Reset user password with new password
+   * @apiVersion 0.0.1
+   * @apiName ResetPassword
+   * @apiGroup Auth
+   * @apiPermission public
+   *
+   * @apiParam  {String}  :token      User's reset password token
+   * @apiParam  {String}  password    New Password
+   *
+   * @apiSuccess {String}  message      Password reset success message
+   *
+   * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
+   * @apiError (Unauthorized 401)  Unauthorized     Incorrect resetToken
+   */
+  .post(validate(AuthValidator.reset), AuthController.reset);
 
 module.exports = router;

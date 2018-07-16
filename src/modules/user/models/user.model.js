@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+const moment = require('moment');
 const UserEnum = require('../utils/user.enum');
 const UserSchema = require('./schema/user.schema');
 const { auth } = require('../../../configs/config').env;
@@ -34,6 +35,32 @@ UserSchema.statics = {
   secureFields: ['password', 'secret', 'activate', 'reset', 'services'],
 
   refSchemas: ['Address', 'createdBy'],
+
+  async activate({ token }) {
+    const user = await this.find({ 'activate.token': token, 'activate.expireAt': new Date() });
+    if (!user) {
+      throw new Error('Invalid/Expired token, please retry');
+    }
+    // update the active flag
+    user.activeFlag = true;
+    user.save();
+    // return the user object
+    return user;
+  },
+
+  async reactivate({ email }) {
+    const user = await this.find({ email });
+    if (!user) {
+      throw new Error('Email not found to sent activation token');
+    }
+    // update the active flag
+    user.activate.token = crypto.randomBytes(16).toString('base64');
+    user.activate.expiresAt = moment().add(1, 'days');
+    user.save();
+    // return the user object
+    return user;
+  },
+
 };
 
 /**

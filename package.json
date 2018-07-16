@@ -13,7 +13,11 @@
   "scripts": {
     "start": "nodemon ./index.js",
     "lint": "eslint **/*.js --ignore-path .gitignore --ignore-pattern internals/scripts",
-    "script": "node src/core/scripts/core.script.js"
+    "lint:fix": "yarn lint -- --fix",
+    "lint:watch": "yarn lint -- --watch",
+    "script": "node src/core/scripts/core.script.js",
+    "docs": "apidoc -i src -o docs",
+    "postdocs": "opn docs/index.html"
   },
   "repository": {
     "type": "git",
@@ -72,6 +76,7 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0",
-    "nodemon": "^1.17.5"
+    "nodemon": "^1.17.5",
+    "opn-cli": "^3.1.0"
   }
 }

@@ -5,6 +5,10 @@ const mongoose = require('mongoose');
  * @private
  */
 const AuthSchema = new mongoose.Schema({
+  _userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
   type: {
     type: String,
     enum: ['local', 'google', 'facebook', 'twitter'],
@@ -29,8 +33,8 @@ const AuthSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-AuthSchema.index({ refreshToken: 1, userId: 1 });
-AuthSchema.index({ refreshToken: 1, userEmail: 1 });
+AuthSchema.index({ _userId: 1, refreshToken: 1 });
+AuthSchema.index({ token: 1, refreshToken: 1 });
 
 /**
  * export the schema
