@@ -1,4 +1,6 @@
 const HttpStatus = require('http-status');
+const passport = require('passport');
+
 const UserModel = require('../../user/models/user.model');
 
 /**
@@ -21,8 +23,14 @@ exports.signup = async (req, res, next) => {
  */
 exports.signin = async (req, res, next) => {
   try {
-    console.log(req.body);
-    res.send({ status: 'success' });
+    passport.authenticate('auth-jwt', (err, user, info) => {
+      if (err || !user) {
+        res.status(HttpStatus.UNAUTHORIZED).send(info);
+      }
+
+      req.user = user.securedUser();
+      res.status(HttpStatus.OK).send(req.user);
+    });
   } catch (error) {
     next(error);
   }

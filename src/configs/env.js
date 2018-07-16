@@ -3,7 +3,7 @@ const fs = require('fs');
 
 // Check there is .env file in repo for environment config
 if (!fs.existsSync('.env')) {
-  console.log('Environment file not defined!!');
+  // console.log('Environment file not defined!!');
   process.exit(1);
 }
 /**
@@ -34,6 +34,12 @@ module.exports = {
       keepAlive: 1,
       useNewUrlParser: true,
     },
+  },
+  auth: {
+    session: false,
+    salt: '',
+    saltRound: 8, // ~40 hashes/sec
+    expiresIn: 2880, // 2 days in minutes
   },
   log: {
     format: process.env.LOG_FORMAT,

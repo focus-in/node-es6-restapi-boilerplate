@@ -28,8 +28,6 @@ module.exports.start = async () => {
     const app = await express.init(config);
     // connect mongodb with mongoose
     const conn = await mongoose.connect(config.env);
-    // load all the dependent module files before start application
-    await express.load(app, config);
     // express start & listen to server port
     await express.listen(app, conn);
     // return

@@ -11,6 +11,7 @@ const queryType = require('query-types');
 
 const logger = require('./logger');
 const error = require('./error');
+const JwtStrategy = require('../strategies/jwt.strategy');
 const CoreRoutes = require('../../core/routers/core.router');
 
 /**
@@ -65,6 +66,7 @@ module.exports.initMiddlewares = (app, config) => {
  * @param {Object} app express app object
  */
 module.exports.initAuthentication = (app) => {
+  JwtStrategy.init();
   app.use(passport.initialize());
 };
 
@@ -153,26 +155,6 @@ module.exports.init = (config) => {
 // module.exports.loadStrategies = (app, config) => {
 //   require('../strategies/jwt.strategy');
 // };
-
-/**
- * Load the app with other loaders
- * @param {Class} config config class with env properties & methods
- */
-module.exports.load = (app, config) => {
-  // load all the modules model file
-  // this.loadModels(app, config);
-
-  // load all the router files to define route
-  // this.loadRouters(app, config);
-
-  // load all module specific configs
-  // this.loadConfigs(app);
-
-  // load all the authentication strategies
-  // this.loadStrategies(app, config);
-
-  return app;
-};
 
 /**
  * Express to listen in server port

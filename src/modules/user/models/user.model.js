@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const UserEnum = require('../utils/user.enum');
 const UserSchema = require('./schema/user.schema');
+const { auth } = require('../../../configs/config').env;
 
 /**
  * Add your
@@ -9,7 +11,10 @@ const UserSchema = require('./schema/user.schema');
  * - virtuals
  */
 UserSchema.pre('save', async (next) => {
-  console.log('pre save');
+  // hash password before save
+  if (this.password && this.isModified('password')) {
+    this.password = this.hashPassword(this.password);
+  }
   return next();
 });
 
@@ -47,6 +52,26 @@ UserSchema.method({
     });
     // return after removed secure fields
     return _this;
+  },
+
+  /**
+   * Save only hashed user password
+   *
+   * @param {String} password User password string
+   * @return {String} hashPassword
+   */
+  hashPassword(password) {
+    return bcrypt.hashSync(password, auth.saltRound);
+  },
+
+  /**
+   * Compare user password with hash password
+   *
+   * @param {String} password User password string
+   * @return {Boolean} compared result
+   */
+  comparePassword(password) {
+    return bcrypt.compareSync(password, this.password);
   },
 });
 
