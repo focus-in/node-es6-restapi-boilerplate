@@ -41,6 +41,21 @@ module.exports = {
     secretRound: 8, // ~40 hashes/sec
     expiresIn: 2880, // 2 days in minutes
     refreshTill: 30, // 30 days
+    google: {
+      clientId: '',
+      clientSecret: '',
+      callbackURL: '',
+    },
+    facebook: {
+      clientId: '',
+      clientSecret: '',
+      callbackURL: '',
+    },
+    twitter: {
+      consumerKey: '',
+      consumerSecret: '',
+      callbackURL: '',
+    },
   },
   log: {
     format: process.env.LOG_FORMAT,
