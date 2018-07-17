@@ -37,23 +37,23 @@ module.exports = {
   },
   auth: {
     session: false,
-    secret: '',
-    secretRound: 8, // ~40 hashes/sec
-    expiresIn: 2880, // 2 days in minutes
-    refreshTill: 30, // 30 days
+    secret: process.env.AUTH_SECRET,
+    secretRound: process.env.AUTH_SECRET_ROUND, // 8 = ~40 hashes/sec
+    expiresIn: process.env.AUTH_EXPIRES_IN, // 2880 = 2 days in minutes
+    refreshTill: process.env.AUTH_REFRESH_TILL, // 30 days
     google: {
-      clientId: '',
-      clientSecret: '',
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
       callbackURL: '',
     },
     facebook: {
-      clientId: '',
-      clientSecret: '',
+      clientId: process.env.AUTH_FACEBOOK_ID,
+      clientSecret: process.env.AUTH_FACEBOOK_SECRET,
       callbackURL: '',
     },
     twitter: {
-      consumerKey: '',
-      consumerSecret: '',
+      consumerKey: process.env.AUTH_TWITTER_KEY,
+      consumerSecret: process.env.AUTH_TWITTER_SECRET,
       callbackURL: '',
     },
   },
