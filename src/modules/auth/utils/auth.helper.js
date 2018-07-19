@@ -1,6 +1,22 @@
 const moment = require('moment');
-const { auth } = require('../../../configs/config').env;
+const pug = require('pug');
+const mailer = require('../../../configs/libs/mailer');
+const messenger = require('../../../configs/libs/messenger');
+const { admin, auth } = require('../../../configs/config').env;
 const Auth = require('../models/auth.model');
+
+exports.activationEmail = (user) => {
+  mailer.sendMail({
+    from: admin.email,
+    to: user.email,
+    subject: 'User registered, Please activate your account',
+    html: pug.renderFile('../templates/user.activation.pug', user),
+  });
+};
+
+exports.activationPhone = (user) => {
+  messenger.sendSms(user.phone, 'user otp');
+};
 
 exports.tokenResponse = async (user) => {
   const tokenType = 'Bearer';

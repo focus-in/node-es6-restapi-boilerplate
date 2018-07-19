@@ -1,5 +1,6 @@
 const express = require('express');
 const validate = require('express-validation');
+const passport = require('passport');
 
 const AuthController = require('../controllers/auth.controller');
 const AuthValidator = require('../validators/auth.validator');
@@ -61,6 +62,34 @@ router.route('/signin')
    * @apiError (Forbidden 403)     Forbidden        Only admins can create the data
    */
   .post(validate(AuthValidator.signin), AuthController.signin);
+
+router.route('/google')
+  .get(passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.route('/google/callback')
+  .get(passport.authenticate('google', {
+    successRedirect: '/google/success',
+    failureRedirect: '/',
+  }));
+
+router.route('/google/success')
+  .get((req, res) => {
+    console.log(res);
+    res.send(res.data);
+  });
+
+router.route('/facebook')
+  .get(passport.authenticate('facebook'));
+
+router.route('/facebook/callback')
+  .get(passport.authenticate('facebook', { failureRedirect: '/' }, (req, res) => {
+    console.log('callback susscess response');
+    console.log(res.data);
+    res.send('success');
+  }));
+
+router.route('/facebook/success')
+  .get((req, res) => { res.send(res.data); });
 
 router.route('/activate/:token')
   /**

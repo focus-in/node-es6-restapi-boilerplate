@@ -27,6 +27,9 @@ module.exports = {
   app: {
     url: appUrl,
   },
+  admin: {
+    email: process.env.ADMIN_EMAIL,
+  },
   db: {
     name: mongoName,
     uri: mongoUri,
@@ -42,19 +45,19 @@ module.exports = {
     expiresIn: process.env.AUTH_EXPIRES_IN, // 2880 = 2 days in minutes
     refreshTill: process.env.AUTH_REFRESH_TILL, // 30 days
     google: {
-      clientId: process.env.AUTH_GOOGLE_ID,
+      clientID: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
-      callbackURL: '',
+      callbackURL: `${appUrl}/api/v1/auth/google/callback`,
     },
     facebook: {
-      clientId: process.env.AUTH_FACEBOOK_ID,
+      clientID: process.env.AUTH_FACEBOOK_ID,
       clientSecret: process.env.AUTH_FACEBOOK_SECRET,
-      callbackURL: '',
+      callbackURL: `${appUrl}/api/v1/auth/facebook/callback`,
     },
     twitter: {
       consumerKey: process.env.AUTH_TWITTER_KEY,
       consumerSecret: process.env.AUTH_TWITTER_SECRET,
-      callbackURL: '',
+      callbackURL: `${appUrl}/api/v1/auth/twitter/callback`,
     },
   },
   log: {

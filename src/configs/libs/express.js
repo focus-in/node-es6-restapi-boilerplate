@@ -11,6 +11,10 @@ const queryType = require('query-types');
 
 const logger = require('./logger');
 const error = require('./error');
+const LocalStrategy = require('../strategies/local.strategy');
+const GoogleStrategy = require('../strategies/google.strategy');
+const FacebookStrategy = require('../strategies/facebook.strategy');
+const TwitterStrategy = require('../strategies/twitter.strategy');
 const JwtStrategy = require('../strategies/jwt.strategy');
 const CoreRoutes = require('../../core/routers/core.router');
 
@@ -62,10 +66,22 @@ module.exports.initMiddlewares = (app, config) => {
 };
 
 /**
+ * Init view engine for email templates
+ * @param {Object} app express app object
+ */
+module.exports.initViewEngine = (app) => {
+  app.set('view engine', 'pug');
+};
+
+/**
  * Initialize passport authentication
  * @param {Object} app express app object
  */
 module.exports.initAuthentication = (app) => {
+  LocalStrategy.init();
+  GoogleStrategy.init();
+  FacebookStrategy.init();
+  TwitterStrategy.init();
   JwtStrategy.init();
   app.use(passport.initialize());
 };
@@ -134,6 +150,9 @@ module.exports.init = (config) => {
 
   // init all middlewares
   this.initMiddlewares(app, config);
+
+  // init view engine
+  this.initViewEngine(app);
 
   // enable authentication
   this.initAuthentication(app);

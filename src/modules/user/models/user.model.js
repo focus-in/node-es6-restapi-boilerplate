@@ -32,7 +32,7 @@ UserSchema.statics = {
   /**
    * Schema secure fields
    */
-  secureFields: ['password', 'secret', 'activate', 'reset', 'services'],
+  secureFields: ['password', 'salt', 'activate', 'reset', 'services'],
 
   refSchemas: ['Address', 'createdBy'],
 

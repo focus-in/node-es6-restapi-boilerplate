@@ -7,5 +7,3 @@ program
   .version('0.0.1')
   .description('GoPool Command line interface')
   .usage('[Command] [args] [Options]');
-
-require('../../modules/user/scripts/user.script');

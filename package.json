@@ -7,7 +7,7 @@
   "private": false,
   "license": "MIT",
   "engines": {
-    "node": ">=8",
+    "node": "8.11.3",
     "yarn": "*"
   },
   "scripts": {
@@ -69,6 +69,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.4",
+    "pug": "^2.0.3",
     "query-types": "^0.1.4",
     "textlocal": "^0.1.1",
     "winston": "^2.4.2",

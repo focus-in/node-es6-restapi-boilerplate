@@ -3,6 +3,7 @@ const passport = require('passport');
 
 const UserModel = require('../../user/models/user.model');
 const AuthModel = require('../models/auth.model');
+const AuthHelper = require('../utils/auth.helper');
 
 /**
  * User signup - email registration
@@ -15,6 +16,12 @@ exports.signup = async (req, res, next) => {
   try {
     const User = new UserModel(req.body);
     const user = await User.save();
+    // sent auth registration email
+    AuthHelper.activationEmail(user);
+    // sent otp to registered phone
+    AuthHelper.activationPhone(user);
+    // TODO: events to register activities & notifications
+    // response
     res.status(HttpStatus.CREATED).json(user.securedUser(UserModel.secureFields));
   } catch (error) {
     next(error);

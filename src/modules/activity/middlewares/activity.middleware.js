@@ -1,15 +1,15 @@
 const CoreMiddleware = require('../../../core/middlewares/core.middleware');
-const UserModel = require('../models/user.model');
+const Activity = require('../models/activity.model');
 
 module.exports.queryBuilder = (req, res, next) => {
   // build the select fields for the request
-  req.query = CoreMiddleware.selectBuilder(req.query, UserModel.secureFields);
+  req.query = CoreMiddleware.selectBuilder(req.query, Activity.secureFields);
 
   // build the filter fields for the request
   req.query = CoreMiddleware.filterBuilder(req.query);
 
   // build the select fields for the request
-  // req.query = CoreMiddleware.withBuilder(req.query, UserModel.refSchemas);
+  // req.query = CoreMiddleware.withBuilder(req.query, Activity.refSchemas);
 
   // build the filter fields for the request
   req.query = CoreMiddleware.limitBuilder(req.query);
