@@ -45,6 +45,7 @@ exports.filterBuilder = (query) => {
 exports.withBuilder = (query, refSchemas) => {
   // check or define object for with fields
   query.with = (query.with) ? query.with : {};
+  console.log(refSchemas);
 
   return query;
 };
