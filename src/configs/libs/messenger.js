@@ -1,5 +1,5 @@
 const textlocal = require('textlocal');
-const { sms } = require('../config');
+const { sms } = require('../config').env;
 const logger = require('./logger');
 // SMTP mail transport
 const transporter = textlocal(sms.options);

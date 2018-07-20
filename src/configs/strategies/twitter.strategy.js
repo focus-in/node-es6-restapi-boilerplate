@@ -1,10 +1,9 @@
-const passport = require('passport');
 const TwitterStrategy = require('passport-twitter').Strategy;
 
 const { twitter } = require('../env').auth;
 const UserModel = require('../../modules/user/models/user.model');
 
-module.exports.init = () => {
+module.exports.init = (passport) => {
   passport.use('twitter', new TwitterStrategy(twitter, (token, tokenSecret, profile, cb) => {
     UserModel.findOrCreate({ twitterId: profile.id })
       .then((err, user) => {

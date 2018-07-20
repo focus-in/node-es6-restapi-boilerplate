@@ -1,15 +1,45 @@
+const AuthModel = require('./models/auth.model');
+const AuthMiddleware = require('./middlewares/auth.middleware');
+const AuthController = require('./controllers/auth.controller');
 const AuthRouter = require('./routers/auth.router');
+const AuthHelper = require('./utils/auth.helper');
 
-module.exports = (app, router) => {
+/**
+ * Load as a module with all inner classes
+ */
+module.exports = {
   /**
    * Name of the module
-   * @type {String}
    */
-  const name = 'auth';
-  app.name = name;
+  name: 'auth',
 
   /**
-   * Load the module router
+   * Load the auth model
    */
-  AuthRouter(app, router);
+  model: AuthModel,
+
+  /**
+   * Load the auth middleware
+   */
+  middleware: AuthMiddleware,
+
+  /**
+   * Load the auth controller
+   */
+  controller: AuthController,
+
+  /**
+   * Load the auth router
+   */
+  router: AuthRouter,
+
+  /**
+   * Load other utils classes
+   */
+  utils: {
+    /**
+     * Load the auth helper functions
+     */
+    helper: AuthHelper,
+  },
 };

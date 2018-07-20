@@ -1,21 +1,51 @@
-const UserRouter = require('./routers/user.router');
+const UserModel = require('./models/user.model');
 const UserScript = require('./scripts/user.script');
+const UserMiddleware = require('./middlewares/user.middleware');
+const UserController = require('./controllers/user.controller');
+const UserRouter = require('./routers/user.router');
+const UserEnum = require('./utils/user.enum');
 
-module.exports = (app, router) => {
+/**
+ * Load as a module with all inner classes
+ */
+module.exports = {
   /**
    * Name of the module
-   * @type {String}
    */
-  const name = 'user';
-  app.name = name;
+  name: 'user',
 
   /**
-   * Load the module router
+   * Load the user model
    */
-  UserRouter(app, router);
+  model: UserModel,
 
   /**
-   * Load the module script
+   * Load the user script
    */
-  UserScript();
+  script: UserScript,
+
+  /**
+   * Load the user middleware
+   */
+  middleware: UserMiddleware,
+
+  /**
+   * Load the user controller
+   */
+  controller: UserController,
+
+  /**
+   * Load the user router
+   */
+  router: UserRouter,
+
+  /**
+   * Load other utils classes
+   */
+  utils: {
+    /**
+     * Load the user enum objects
+     */
+    enum: UserEnum,
+  },
 };

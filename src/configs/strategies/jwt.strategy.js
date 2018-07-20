@@ -1,7 +1,4 @@
-// const _ = require('lodash');
-const passport = require('passport');
 const passportJWT = require('passport-jwt');
-
 const UserModel = require('../../modules/user/models/user.model');
 
 const { ExtractJwt } = passportJWT;
@@ -9,7 +6,7 @@ const JwtStrategy = passportJWT.Strategy;
 // const UserModel = require('mongoose').model('User');
 const { auth } = require('../env');
 
-module.exports.init = () => {
+module.exports.init = (passport) => {
   const options = {};
   options.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
   options.secretOrKey = auth.secret;

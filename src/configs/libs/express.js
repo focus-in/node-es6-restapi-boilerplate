@@ -7,15 +7,11 @@ const cors = require('cors');
 const helmet = require('helmet');
 const passport = require('passport');
 const queryType = require('query-types');
+const fs = require('fs');
 // const validation = require('express-validation');
-
 const logger = require('./logger');
 const error = require('./error');
-const LocalStrategy = require('../strategies/local.strategy');
-const GoogleStrategy = require('../strategies/google.strategy');
-const FacebookStrategy = require('../strategies/facebook.strategy');
-const TwitterStrategy = require('../strategies/twitter.strategy');
-const JwtStrategy = require('../strategies/jwt.strategy');
+
 const CoreRoutes = require('../../core/routers/core.router');
 
 /**
@@ -74,15 +70,31 @@ module.exports.initViewEngine = (app) => {
 };
 
 /**
+ * Init all the modules
+ * @param {Object} app express app object
+ */
+module.exports.initModules = () => {
+  const modulePath = `${process.cwd()}/src/modules`;
+  // Load all the modules
+  fs.readdirSync(modulePath).forEach((module) => {
+    // eslint-disable-next-line
+    require(`${modulePath}/${module}`);
+  });
+};
+
+/**
  * Initialize passport authentication
  * @param {Object} app express app object
  */
 module.exports.initAuthentication = (app) => {
-  LocalStrategy.init();
-  GoogleStrategy.init();
-  FacebookStrategy.init();
-  TwitterStrategy.init();
-  JwtStrategy.init();
+  const strategyPath = `${process.cwd()}/src/config/strategies`;
+  // Load & init all the auth strategies
+  fs.readdirSync(strategyPath).forEach((strategy) => {
+    // eslint-disable-next-line
+    const Strategy = require(strategy);
+    Strategy.init(passport);
+  });
+  // initialize passport
   app.use(passport.initialize());
 };
 
@@ -154,7 +166,10 @@ module.exports.init = (config) => {
   // init view engine
   this.initViewEngine(app);
 
-  // enable authentication
+  // init modules
+  this.initModules();
+
+  // init authentication strategies
   this.initAuthentication(app);
 
   // init router
@@ -165,15 +180,6 @@ module.exports.init = (config) => {
 
   return app;
 };
-
-/**
- * load all the authentication strategies
- * @param {Object} app app object
- * @param {Object} config config objct
- */
-// module.exports.loadStrategies = (app, config) => {
-//   require('../strategies/jwt.strategy');
-// };
 
 /**
  * Express to listen in server port

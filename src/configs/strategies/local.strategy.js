@@ -1,9 +1,7 @@
-const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-
 const UserModel = require('../../modules/user/models/user.model');
 
-module.exports.init = () => {
+module.exports.init = (passport) => {
   // Use local strategy
   passport.use('local', new LocalStrategy({
     usernameField: 'email',
