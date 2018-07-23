@@ -3,7 +3,7 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 const { facebook } = require('../env').auth;
 // const UserModel = require('../../modules/user/models/user.model');
 
-module.exports.init = (passport) => {
+module.exports = (passport) => {
   passport.use('facebook', new FacebookStrategy(facebook, (accessToken, refreshToken, profile, cb) => {
     // console.log('---google strategy-----');
     // console.log(accessToken);

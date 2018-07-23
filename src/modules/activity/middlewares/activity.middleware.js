@@ -1,4 +1,4 @@
-const CoreMiddleware = require('../../../core/middlewares/core.middleware');
+const CoreMiddleware = require('../../../system/middlewares/core.middleware');
 const Activity = require('../models/activity.model');
 
 module.exports.queryBuilder = (req, res, next) => {

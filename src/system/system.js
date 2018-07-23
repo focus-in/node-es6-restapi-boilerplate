@@ -11,7 +11,7 @@ module.exports = {
   /**
    * Name of the module
    */
-  name: 'core',
+  name: 'system',
 
   /**
    * Load the core script

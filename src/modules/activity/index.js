@@ -1,8 +1,9 @@
-// const ActivityModel = require('./models/activity.model');
-// const ActivityMiddleware = require('./middlewares/activity.middleware');
-// const ActivityController = require('./controllers/activity.controller');
+const ActivityModel = require('./models/activity.model');
+const ActivityMiddleware = require('./middlewares/activity.middleware');
+const ActivityController = require('./controllers/activity.controller');
+const ActivityValidator = require('./validators/activity.validator');
 const ActivityRouter = require('./routers/activity.router');
-// const ActivityEnum = require('./utils/activity.enum');
+const ActivityEnum = require('./utils/activity.enum');
 
 /**
  * Load as a module with all inner classes
@@ -16,17 +17,22 @@ module.exports = {
   /**
    * Load the activity model
    */
-  // model: ActivityModel,
+  model: ActivityModel,
 
   /**
    * Load the activity middleware
    */
-  // middleware: ActivityMiddleware,
+  middleware: ActivityMiddleware,
 
   /**
    * Load the activity controller
    */
-  // controller: ActivityController,
+  controller: ActivityController,
+
+  /**
+   * Load the activity validator
+   */
+  validator: ActivityValidator,
 
   /**
    * Load the activity router
@@ -40,6 +46,6 @@ module.exports = {
     /**
      * Load the activity enum objects
      */
-    // enum: ActivityEnum,
+    enum: ActivityEnum,
   },
 };

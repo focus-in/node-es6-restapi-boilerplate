@@ -7,12 +7,10 @@ const cors = require('cors');
 const helmet = require('helmet');
 const passport = require('passport');
 const queryType = require('query-types');
-const glob = require('glob');
 // const validation = require('express-validation');
 const logger = require('./logger');
 const error = require('./error');
-
-const CoreRoutes = require('../../core/routers/core.router');
+const System = require('../../system');
 
 /**
  * Init - adding application variables to app object
@@ -74,11 +72,7 @@ module.exports.initViewEngine = (app) => {
  * @param {Object} app express app object
  */
 module.exports.initModels = () => {
-  const modelsPath = `${process.cwd()}/src/modules/*/models/*.js`;
-  // Load all the modules
-  const modelFiles = glob.sync(modelsPath);
-  // eslint-disable-next-line
-  modelFiles.map((model) => require(model));
+  System.initModels();
 };
 
 /**
@@ -86,14 +80,7 @@ module.exports.initModels = () => {
  * @param {Object} app express app object
  */
 module.exports.initAuthentication = (app) => {
-  const strategyPath = `${process.cwd()}/src/configs/strategies/*.js`;
-  const strategyFiles = glob.sync(strategyPath);
-  // Load & init all the auth strategies
-  strategyFiles.map((strategy) => {
-    // eslint-disable-next-line
-    const Strategy = require(strategy);
-    return Strategy.init(passport);
-  });
+  System.initStrategies(passport);
   // initialize passport
   app.use(passport.initialize());
 };
@@ -104,20 +91,23 @@ module.exports.initAuthentication = (app) => {
  */
 module.exports.initRouters = (app) => {
   // Initialize express router
-  // const router = express.Router();
+  const router = express.Router();
 
-  /**
-   * TODO: load all the routes in core with single express router instance
-   */
-  // Get all v1 Core Router
-  // const routes = coreRoutes.init(router);
+  // init all the system module routers
+  const v1Routers = System.initV1Routers(app, router);
+
   // mount api v1 routes
-  app.use('/api/v1', CoreRoutes);
+  app.use('/api/v1', v1Routers);
+
   // api/v1/docs
-  // router.use('/api/v1/docs', express.static('docs'));
+  app.use('/api/v1/docs', express.static('docs'));
+
+  // api status route
+  app.use('/status', (req, res) => res.send('{APP_NAME} running in {ENV} {DATE}'));
 
   // home route
   app.use('/', (req, res) => {
+    // TODO: this might load with another landing page
     res.send('Welcome to keviveks Node Starter Boilerplate');
   });
 };

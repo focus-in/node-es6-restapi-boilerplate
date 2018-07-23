@@ -1,11 +1,10 @@
 const Joi = require('joi');
-const ActivityModel = require('../models/activity.model');
 
 module.exports = {
   list: {
     query: {
       select: Joi.string().trim().required(),
-      offset: Joi.string().trim().regex(/[a-zA-Z0-9]{3,30}/).required(),
+      offset: Joi.number().required(),
       limit: Joi.number().required(),
       order: Joi.string().trim().required(),
       sort: Joi.string().trim().email().required(),
@@ -26,7 +25,7 @@ module.exports = {
       pincode: Joi.number(),
       lat: Joi.number(),
       long: Joi.number(),
-      tag: Joi.string().trim().valid(ActivityModel.enum.tags),
+      tag: Joi.string(),
     },
   },
   update: {
@@ -42,7 +41,7 @@ module.exports = {
       pincode: Joi.number(),
       lat: Joi.number(),
       long: Joi.number(),
-      tag: Joi.string().trim().valid(ActivityModel.enum.tags),
+      tag: Joi.string().trim(),
     },
   },
   delete: {

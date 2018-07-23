@@ -6,7 +6,7 @@ const JwtStrategy = passportJWT.Strategy;
 // const UserModel = require('mongoose').model('User');
 const { auth } = require('../env');
 
-module.exports.init = (passport) => {
+module.exports = (passport) => {
   const options = {};
   options.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
   options.secretOrKey = auth.secret;

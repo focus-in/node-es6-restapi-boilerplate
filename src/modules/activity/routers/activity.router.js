@@ -2,7 +2,7 @@ const validation = require('express-validation');
 const ActivityController = require('../controllers/activity.controller');
 const ActivityValidator = require('../validators/activity.validator');
 
-module.exports = (router) => {
+module.exports = (app, router) => {
   router
     .route('/')
     /**
@@ -157,4 +157,11 @@ module.exports = (router) => {
    * Load activity on :activityId route
    */
   router.param('activityId', ActivityController.load);
+
+  /**
+   * Define the route key
+   */
+  app.use('activities', router);
+
+  return router;
 };
