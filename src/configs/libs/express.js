@@ -10,7 +10,8 @@ const queryType = require('query-types');
 // const validation = require('express-validation');
 const logger = require('./logger');
 const error = require('./error');
-const System = require('../../system');
+require('module-alias/register');
+const SystemConfig = require('@system').config; // eslint-disable-line
 
 /**
  * Init - adding application variables to app object
@@ -72,7 +73,7 @@ module.exports.initViewEngine = (app) => {
  * @param {Object} app express app object
  */
 module.exports.initModels = () => {
-  System.initModels();
+  SystemConfig.initModels();
 };
 
 /**
@@ -80,7 +81,7 @@ module.exports.initModels = () => {
  * @param {Object} app express app object
  */
 module.exports.initAuthentication = (app) => {
-  System.initStrategies(passport);
+  SystemConfig.initStrategies(passport);
   // initialize passport
   app.use(passport.initialize());
 };
@@ -94,7 +95,7 @@ module.exports.initRouters = (app) => {
   const router = express.Router();
 
   // init all the system module routers
-  const v1Routers = System.initV1Routers(app, router);
+  const v1Routers = SystemConfig.initV1Routers(app, router);
 
   // mount api v1 routes
   app.use('/api/v1', v1Routers);

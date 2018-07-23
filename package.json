@@ -41,6 +41,11 @@
     "generator",
     "starter project"
   ],
+  "_moduleAliases": {
+    "@config": "src/configs",
+    "@system": "src/system",
+    "@modules": "src/modules"
+  },
   "dependencies": {
     "bcrypt": "^3.0.0",
     "bluebird": "^3.5.1",
@@ -59,6 +64,7 @@
     "jwt-simple": "^0.5.1",
     "lodash": "^4.17.10",
     "method-override": "^2.3.10",
+    "module-alias": "^2.1.0",
     "moment": "^2.22.2",
     "mongoose": "^5.1.4",
     "morgan": "^1.9.0",

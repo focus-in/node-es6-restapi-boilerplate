@@ -1,30 +1,44 @@
-const glob = require('glob');
-const assets = require('../configs/assets');
+const SystemConfig = require('./configs/system.config');
+const SystemScript = require('./scripts/system.script');
+const SystemMiddleware = require('./middlewares/system.middleware');
+const SystemActions = require('./utils/system.actions');
+const SystemMessages = require('./utils/system.messages');
 
 /**
- * Load the whole system modules
+ * Load as a module with all inner classes
  */
-exports.initModels = () => {
-  // Get all modules model files
-  const modelFiles = glob.sync(`${process.cwd()}/${assets.models}`);
-  // Load all model files
-  // eslint-disable-next-line
-  modelFiles.map((model) => require(model));
-};
+module.exports = {
+  /**
+   * Name of the module
+   */
+  name: 'system',
 
-exports.initStrategies = (passport) => {
-  // Get all strategy files
-  const strategyFiles = glob.sync(`${process.cwd()}/${assets.strategies}`);
-  // Load & init all the auth strategies
-  // eslint-disable-next-line
-  strategyFiles.map((strategy) => require(strategy)(passport));
-};
+  /**
+   * Load the system config
+   */
+  config: SystemConfig,
 
-exports.initV1Routers = (app, router) => {
-  // module routers
-  const moduleRouters = glob.sync(`${process.cwd()}/${assets.routers}`);
-  // eslint-disable-next-line
-  moduleRouters.map((moduleRoute) => require(moduleRoute)(app, router));
-  // return the router with all module routes
-  return router;
+  /**
+   * Load the system script
+   */
+  script: SystemScript,
+
+  /**
+   * Load the system/core middleware
+   */
+  middleware: SystemMiddleware,
+
+  /**
+   * Load other utils classes
+   */
+  utils: {
+    /**
+     * Load the core action objects
+     */
+    actions: SystemActions,
+    /**
+     * Load the core message objects
+     */
+    messages: SystemMessages,
+  },
 };

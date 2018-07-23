@@ -1,21 +1,22 @@
-const CoreMiddleware = require('../../../system/middlewares/core.middleware');
+require('module-alias/register');
+const SystemMiddleware = require('@system').middleware; // eslint-disable-line
 const UserModel = require('../models/user.model');
 
 module.exports.queryBuilder = (req, res, next) => {
   // build the select fields for the request
-  req.query = CoreMiddleware.selectBuilder(req.query, UserModel.secureFields);
+  req.query = SystemMiddleware.selectBuilder(req.query, UserModel.secureFields);
 
   // build the filter fields for the request
-  req.query = CoreMiddleware.filterBuilder(req.query);
+  req.query = SystemMiddleware.filterBuilder(req.query);
 
   // build the select fields for the request
-  // req.query = CoreMiddleware.withBuilder(req.query, UserModel.refSchemas);
+  // req.query = SystemMiddleware.withBuilder(req.query, UserModel.refSchemas);
 
   // build the filter fields for the request
-  req.query = CoreMiddleware.limitBuilder(req.query);
+  req.query = SystemMiddleware.limitBuilder(req.query);
 
   // build the select fields for the request
-  req.query = CoreMiddleware.sortBuilder(req.query);
+  req.query = SystemMiddleware.sortBuilder(req.query);
 
   return next();
 };
