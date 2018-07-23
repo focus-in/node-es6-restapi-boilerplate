@@ -51,6 +51,7 @@
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "express-validation": "^1.0.2",
+    "glob": "^7.1.2",
     "helmet": "^3.12.1",
     "http-status": "^1.2.0",
     "inquirer": "^6.0.0",

@@ -7,7 +7,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const passport = require('passport');
 const queryType = require('query-types');
-const fs = require('fs');
+const glob = require('glob');
 // const validation = require('express-validation');
 const logger = require('./logger');
 const error = require('./error');
@@ -70,16 +70,15 @@ module.exports.initViewEngine = (app) => {
 };
 
 /**
- * Init all the modules
+ * Init all the models
  * @param {Object} app express app object
  */
-module.exports.initModules = () => {
-  const modulePath = `${process.cwd()}/src/modules`;
+module.exports.initModels = () => {
+  const modelsPath = `${process.cwd()}/src/modules/*/models/*.js`;
   // Load all the modules
-  fs.readdirSync(modulePath).forEach((module) => {
-    // eslint-disable-next-line
-    require(`${modulePath}/${module}`);
-  });
+  const modelFiles = glob.sync(modelsPath);
+  // eslint-disable-next-line
+  modelFiles.map((model) => require(model));
 };
 
 /**
@@ -87,12 +86,13 @@ module.exports.initModules = () => {
  * @param {Object} app express app object
  */
 module.exports.initAuthentication = (app) => {
-  const strategyPath = `${process.cwd()}/src/config/strategies`;
+  const strategyPath = `${process.cwd()}/src/configs/strategies/*.js`;
+  const strategyFiles = glob.sync(strategyPath);
   // Load & init all the auth strategies
-  fs.readdirSync(strategyPath).forEach((strategy) => {
+  strategyFiles.map((strategy) => {
     // eslint-disable-next-line
     const Strategy = require(strategy);
-    Strategy.init(passport);
+    return Strategy.init(passport);
   });
   // initialize passport
   app.use(passport.initialize());
@@ -102,7 +102,7 @@ module.exports.initAuthentication = (app) => {
  * Initialize all app module routers from core v1 router
  * @param {Object} app express app object
  */
-module.exports.initRouter = (app) => {
+module.exports.initRouters = (app) => {
   // Initialize express router
   // const router = express.Router();
 
@@ -166,14 +166,14 @@ module.exports.init = (config) => {
   // init view engine
   this.initViewEngine(app);
 
-  // init modules
-  this.initModules();
+  // init models
+  this.initModels();
 
   // init authentication strategies
   this.initAuthentication(app);
 
   // init router
-  this.initRouter(app);
+  this.initRouters(app);
 
   // init error handler
   this.initErrorHandler(app);

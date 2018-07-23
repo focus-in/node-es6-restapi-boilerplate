@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const moment = require('moment');
 const jwt = require('jwt-simple');
-
 const AuthSchema = require('./schema/auth.schema');
 const { auth } = require('../../../configs/config').env;
 
