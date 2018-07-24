@@ -29,14 +29,13 @@ exports.initStrategies = (passport) => {
 /**
  * Init all module routers
  *
- * @param {Object} app express app Object
  * @param {Object} router express router object
  */
-exports.initV1Routers = (app, router) => {
+exports.initV1Routers = (router) => {
   // module routers
   const moduleRouters = glob.sync(`${process.cwd()}/${assets.routers}`);
   // eslint-disable-next-line
-  moduleRouters.map((moduleRoute) => require(moduleRoute)(app, router));
+  moduleRouters.map((moduleRoute) => require(moduleRoute)(router));
   // return the router with all module routes
   return router;
 };

@@ -4,7 +4,16 @@
 const program = require('commander');
 const { prompt } = require('inquirer');
 
+const UserEnum = require('../utils/user.enum');
 const UserModel = require('../models/user.model');
+
+// const {
+//   addContact,
+//   getContact,
+//   getContactList,
+//   updateContact,
+//   deleteContact
+// } = require('./logic');
 
 const questions = [
   {
@@ -31,13 +40,13 @@ const questions = [
     type: 'list',
     name: 'role',
     message: 'Select role: ',
-    choices: UserModel.enum.roles,
+    choices: UserEnum.roles,
   },
   {
     type: 'list',
     name: 'gender',
     message: 'Select Gender: ',
-    choices: UserModel.enum.gender,
+    choices: UserEnum.gender,
   },
   {
     type: 'input',
@@ -51,11 +60,9 @@ program
   .action((action) => {
     if (action === 'user:create') {
       prompt(questions).then((user) => {
-        console.log('---user object---');
-        console.log(user);
         const User = new UserModel(user);
         User.save()
-          .then(u => console.log(`user saved successfully ${u._id}`))
+          .then(u => console.log(`user saved successfully ${u.id}`))
           .catch(e => console.error(e));
       });
     }
@@ -84,3 +91,4 @@ program
     console.log('');
   })
   .parse(process.argv);
+

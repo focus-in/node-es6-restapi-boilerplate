@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongooseDelete = require('mongoose-delete');
 
 /**
  * Activity Schema
@@ -10,23 +11,27 @@ const ActivitySchema = new mongoose.Schema({
     ref: 'User',
   },
   activity: {
-    id: {
-      type: mongoose.Schema.Types.ObjectId,
-    },
-    in: {
-      type: String,
-    },
+    type: String,
+    maxlength: 64,
+    trim: true,
   },
   message: {
     type: String,
+    maxlength: 64,
+    trim: true,
   },
-  deleteFlag: {
+  deleted: {
     type: Boolean,
     default: false,
   },
 }, {
   timestamps: true,
 });
+
+/**
+ * Add mongoose soft delete plugin with deleted user & time stamp
+ */
+ActivitySchema.plugin(mongooseDelete, { deletedBy: true, deletedAt: true });
 
 /**
  * export the schema

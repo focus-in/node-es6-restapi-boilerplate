@@ -1,28 +1,6 @@
 const mongoose = require('mongoose');
+const mongooseDelete = require('mongoose-delete');
 const userEnum = require('../../utils/user.enum');
-
-// local            : {
-//   email        : String,
-//   password     : String,
-// },
-// facebook         : {
-//   id           : String,
-//   token        : String,
-//   name         : String,
-//   email        : String
-// },
-// twitter          : {
-//   id           : String,
-//   token        : String,
-//   displayName  : String,
-//   username     : String
-// },
-// google           : {
-//   id           : String,
-//   token        : String,
-//   email        : String,
-//   name         : String
-// }
 
 /**
  * User Schema
@@ -49,12 +27,21 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
     minlength: 6,
     maxlength: 128,
   },
   salt: {
     type: String,
+  },
+  _organisationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organisation',
+  },
+  organisationEmail: {
+    type: String,
+    match: /^\S+@\S+\.\S+$/,
+    trim: true,
+    lowercase: true,
   },
   phone: {
     type: Number,
@@ -62,10 +49,10 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     maxlength: 10,
   },
-  // _address: [{
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   // ref: 'Address',
-  // }],
+  _address: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Address',
+  }],
   gender: {
     type: String,
     index: true,
@@ -75,9 +62,12 @@ const UserSchema = new mongoose.Schema({
   birthDate: {
     type: Date,
   },
-  picture: {
+  photos: [{
     type: String,
-    trim: true,
+  }],
+  image: {
+    url: { type: String },
+    isDefault: { type: Boolean, default: true },
   },
   bio: {
     type: String,
@@ -88,22 +78,33 @@ const UserSchema = new mongoose.Schema({
     enum: userEnum.roles,
     default: 'user',
   },
-  serviceProvider: {
-    type: String,
-    enum: userEnum.provider,
-    default: 'local',
+  wallet: {
+    amount: {
+      type: Number,
+      default: 10,
+    },
+    lastUpdate: {
+      type: Date,
+    },
   },
-  // services: {
-  //   facebook: { type: mongoose.Schema.Types.Mixed },
-  //   google: { type: mongoose.Schema.Types.Mixed },
-  //   twitter: { type: mongoose.Schema.Types.Mixed },
-  //   linkedin: { type: mongoose.Schema.Types.Mixed },
-  // },
+  service: {
+    provider: {
+      type: String,
+      enum: userEnum.provider,
+      default: 'local',
+    },
+    id: {
+      type: String,
+    },
+    _raw: {
+      type: mongoose.Schema.Types.Mixed,
+    },
+  },
   activate: {
     token: {
       type: String,
     },
-    expiresAt: {
+    expireAt: {
       type: Date,
     },
   },
@@ -111,10 +112,19 @@ const UserSchema = new mongoose.Schema({
     token: {
       type: String,
     },
-    expiresAt: {
+    expireAt: {
       type: Date,
     },
   },
+  _vouchers: [{
+    voucherId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Voucher',
+    },
+    credit: { type: Number },
+    usedAt: { type: Date },
+    status: { type: String },
+  }],
   activeFlag: {
     type: Boolean,
     default: false,
@@ -123,20 +133,21 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  deleteFlag: {
+  deleted: {
     type: Boolean,
     default: false,
-  },
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
   },
 }, {
   timestamps: true,
 });
 
-UserSchema.index({ deleteFlag: 1, activeFlag: 1, verifiedFlag: 1 });
+UserSchema.index({ deleted: 1, activeFlag: 1, verifiedFlag: 1 });
 UserSchema.index({ verifiedFlag: 1, email: 1, createdAt: -1 });
+
+/**
+ * Add mongoose soft delete plugin with deleted user & time stamp
+ */
+UserSchema.plugin(mongooseDelete, { deletedBy: true, deletedAt: true });
 
 /**
  * export the schema

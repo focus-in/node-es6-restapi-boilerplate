@@ -10,7 +10,7 @@ exports.activationEmail = (user) => {
     from: admin.email,
     to: user.email,
     subject: 'User registered, Please activate your account',
-    html: pug.renderFile('../templates/user.activation.pug', user),
+    html: pug.renderFile(`${process.cwd()}/src/modules/auth/templates/user.activation.pug`, user),
   });
 };
 

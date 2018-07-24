@@ -95,7 +95,7 @@ module.exports.initRouters = (app) => {
   const router = express.Router();
 
   // init all the system module routers
-  const v1Routers = SystemConfig.initV1Routers(app, router);
+  const v1Routers = SystemConfig.initV1Routers(router);
 
   // mount api v1 routes
   app.use('/api/v1', v1Routers);

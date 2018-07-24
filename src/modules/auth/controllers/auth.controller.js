@@ -67,9 +67,11 @@ exports.signin = async (req, res, next) => {
  */
 exports.activate = async (req, res, next) => {
   try {
-    const user = UserModel.activate(req.body);
+    const user = await UserModel.activate(req.params);
+    // remove all the secured fields
+    user.securedUser(UserModel.secureFields);
     // TODO: sent activated successfully email
-    res.status(HttpStatus.CREATED).json(user.securedUser(UserModel.secureFields));
+    res.status(HttpStatus.OK).send(user);
   } catch (error) {
     next(error);
   }
@@ -84,7 +86,7 @@ exports.activate = async (req, res, next) => {
  */
 exports.reactivate = async (req, res, next) => {
   try {
-    const user = UserModel.reactivate(req.body);
+    const user = await UserModel.reactivate(req.body);
     // TODO: sent activation token mail
     res.status(HttpStatus.CREATED).json(user.securedUser(UserModel.secureFields));
   } catch (error) {

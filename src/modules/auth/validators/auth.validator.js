@@ -22,7 +22,7 @@ module.exports = {
 
   // GET /auth/activate/:token
   activate: {
-    param: {
+    params: {
       token: Joi.string().required(),
     },
   },
@@ -51,7 +51,7 @@ module.exports = {
 
   // POST /auth/reset/:token
   reset: {
-    param: {
+    params: {
       token: Joi.string().required(),
     },
     body: {

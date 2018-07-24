@@ -1,16 +1,10 @@
-const validate = require('express-validation');
 const passport = require('passport');
+const validate = require('express-validation');
 const AuthController = require('../controllers/auth.controller');
 const AuthValidator = require('../validators/auth.validator');
 
-/**
- * Init auth module routes
- *
- * @param {Object} app Express application
- * @param {Function} router Express router
- */
-module.exports = (app, router) => {
-  router.route('/signup')
+module.exports = (router) => {
+  router.route('/auth/signup')
     /**
      * @api {post} /signup Signup user
      * @apiDescription Register user with direct email address
@@ -39,7 +33,7 @@ module.exports = (app, router) => {
      */
     .post(validate(AuthValidator.signup), AuthController.signup);
 
-  router.route('/signin')
+  router.route('/auth/signin')
     /**
      * @api {post} /signin Signin User
      * @apiDescription User login with direct email address
@@ -66,35 +60,7 @@ module.exports = (app, router) => {
      */
     .post(validate(AuthValidator.signin), AuthController.signin);
 
-  router.route('/google')
-    .get(passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-  router.route('/google/callback')
-    .get(passport.authenticate('google', {
-      successRedirect: '/google/success',
-      failureRedirect: '/',
-    }));
-
-  router.route('/google/success')
-    .get((req, res) => {
-      console.log(res);
-      res.send(res.data);
-    });
-
-  router.route('/facebook')
-    .get(passport.authenticate('facebook'));
-
-  router.route('/facebook/callback')
-    .get(passport.authenticate('facebook', { failureRedirect: '/' }, (req, res) => {
-      console.log('callback susscess response');
-      console.log(res.data);
-      res.send('success');
-    }));
-
-  router.route('/facebook/success')
-    .get((req, res) => { res.send(res.data); });
-
-  router.route('/activate/:token')
+  router.route('/auth/activate/:token')
     /**
      * @api {get} /activate/:token Activate user registration
      * @apiDescription Activate user with token sent in email or phone
@@ -112,7 +78,7 @@ module.exports = (app, router) => {
      */
     .get(validate(AuthValidator.activate), AuthController.activate);
 
-  router.route('/reactivate')
+  router.route('/auth/reactivate')
     /**
      * @api {post} /reactivate Resend activation token to registered user
      * @apiDescription Resend activation token to registered user in email or phone
@@ -130,7 +96,7 @@ module.exports = (app, router) => {
      */
     .post(validate(AuthValidator.reactivate), AuthController.reactivate);
 
-  router.route('/refresh')
+  router.route('/auth/refresh')
     /**
      * @api {post} /refresh Refresh Auth Token
      * @apiDescription Refresh expired accessToken
@@ -152,7 +118,7 @@ module.exports = (app, router) => {
      */
     .post(validate(AuthValidator.refresh), AuthController.refresh);
 
-  router.route('/forgot')
+  router.route('/auth/forgot')
     /**
      * @api {post} /forgot Forgot password
      * @apiDescription Forgot password request to generate reset token to update user password
@@ -170,7 +136,7 @@ module.exports = (app, router) => {
      */
     .post(validate(AuthValidator.forgot), AuthController.forgot);
 
-  router.route('/reset/:token')
+  router.route('/auth/reset/:token')
     /**
      * @api {post} /reset/:token Reset user forgot Password
      * @apiDescription Reset user password with new password
@@ -189,11 +155,33 @@ module.exports = (app, router) => {
      */
     .post(validate(AuthValidator.reset), AuthController.reset);
 
+  router.route('/auth/google')
+    .get(passport.authenticate('google', { scope: ['email'] }));
 
-  /**
-   * Define the route key
-   */
-  app.use('auth', router);
+  router.route('/auth/google/callback')
+    .get(passport.authenticate('google', {
+      successRedirect: '/google/success',
+      failureRedirect: '/',
+    }));
+
+  router.route('/auth/google/success')
+    .get((req, res) => {
+      console.log(res);
+      res.send(res.data);
+    });
+
+  router.route('/auth/facebook')
+    .get(passport.authenticate('facebook'));
+
+  router.route('/auth/facebook/callback')
+    .get(passport.authenticate('facebook', { failureRedirect: '/' }, (req, res) => {
+      console.log('callback susscess response');
+      console.log(res.data);
+      res.send('success');
+    }));
+
+  router.route('/auth/facebook/success')
+    .get((req, res) => { res.send(res.data); });
 
   return router;
 };

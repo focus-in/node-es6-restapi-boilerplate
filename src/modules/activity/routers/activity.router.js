@@ -1,10 +1,17 @@
 const validation = require('express-validation');
 const ActivityController = require('../controllers/activity.controller');
 const ActivityValidator = require('../validators/activity.validator');
+require('module-alias/register');
+const { isLoggedIn } = require('@system').authenticate; // eslint-disable-line
 
-module.exports = (app, router) => {
+module.exports = (router) => {
+  /**
+   * Add isLoggedIn middleware for all the activities requests
+   */
+  router.use('/activities', isLoggedIn());
+
   router
-    .route('/')
+    .route('/activities')
     /**
      * @api {get} /activity List all Activity
      * @apiDescription List all activity
@@ -74,7 +81,7 @@ module.exports = (app, router) => {
     .post(validation(ActivityValidator.create), ActivityController.create);
 
   router
-    .route('/:activityId')
+    .route('/activities/:activityId')
     /**
      * @api {get} /activity/:activityId Get activity
      * @apiDescription Get activity details by activityId
@@ -157,11 +164,6 @@ module.exports = (app, router) => {
    * Load activity on :activityId route
    */
   router.param('activityId', ActivityController.load);
-
-  /**
-   * Define the route key
-   */
-  app.use('activities', router);
 
   return router;
 };

@@ -67,6 +67,7 @@
     "module-alias": "^2.1.0",
     "moment": "^2.22.2",
     "mongoose": "^5.1.4",
+    "mongoose-delete": "^0.4.0",
     "morgan": "^1.9.0",
     "nodemailer": "^4.6.5",
     "onesignal-node": "^1.1.2",
@@ -78,6 +79,7 @@
     "passport-twitter": "^1.0.4",
     "pug": "^2.0.3",
     "query-types": "^0.1.4",
+    "random-number-csprng": "^1.0.2",
     "textlocal": "^0.1.1",
     "winston": "^2.4.2",
     "winston-daily-rotate-file": "^3.2.1"

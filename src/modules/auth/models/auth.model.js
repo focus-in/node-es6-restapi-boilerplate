@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const moment = require('moment');
 const jwt = require('jwt-simple');
+
 const AuthSchema = require('./schema/auth.schema');
 const { auth } = require('../../../configs/config').env;
 
@@ -37,14 +38,13 @@ AuthSchema.statics = {
    */
   accessToken(user) {
     // NOTE: access secret concat of user salt & unique secret
-    const accessSecret = `${user.salt}${auth.secret}`;
     // payload
     const playload = {
       expiredAt: moment().add(auth.expiresIn, 'minutes').unix(),
       createdAt: moment().unix(),
       _id: user._id,
     };
-    return jwt.encode(playload, accessSecret);
+    return jwt.encode(playload, auth.secret);
   },
 
   /**

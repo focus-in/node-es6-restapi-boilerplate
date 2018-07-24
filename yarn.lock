@@ -301,7 +301,7 @@ bluebird@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.0.tgz#791420d7f551eea2897453a8a77653f96606d67c"
 
-bluebird@^3.5.1:
+bluebird@^3.3.3, bluebird@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
 
@@ -709,6 +709,10 @@ create-error-class@^3.0.0:
   resolved "https://registry.yarnpkg.com/create-error-class/-/create-error-class-3.0.2.tgz#06be7abef947a3f14a30fd610671d401bca8b7b6"
   dependencies:
     capture-stack-trace "^1.0.0"
+
+create-error@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/create-error/-/create-error-0.3.1.tgz#69810245a629e654432bf04377360003a5351a23"
 
 cross-spawn@^5.0.1, cross-spawn@^5.1.0:
   version "5.1.0"
@@ -2315,6 +2319,10 @@ mongodb@3.1.1:
   dependencies:
     mongodb-core "3.1.0"
 
+mongoose-delete@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/mongoose-delete/-/mongoose-delete-0.4.0.tgz#6eeeed56d8b478cf09ae02b5894d11380056be4a"
+
 mongoose-legacy-pluralize@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/mongoose-legacy-pluralize/-/mongoose-legacy-pluralize-1.0.2.tgz#3ba9f91fa507b5186d399fb40854bff18fb563e4"
@@ -2986,6 +2994,13 @@ qs@6.5.2, qs@~6.5.1:
 query-types@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/query-types/-/query-types-0.1.4.tgz#e95e28cd730d856dbbeb493205384850cc8ea8ea"
+
+random-number-csprng@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/random-number-csprng/-/random-number-csprng-1.0.2.tgz#fcd120e62dffc2c07674c7c3fe01e16b25f73a26"
+  dependencies:
+    bluebird "^3.3.3"
+    create-error "^0.3.1"
 
 range-parser@~1.2.0:
   version "1.2.0"

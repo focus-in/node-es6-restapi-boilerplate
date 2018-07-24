@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const moment = require('moment');
+const randomNumber = require('random-number-csprng');
 const UserEnum = require('../utils/user.enum');
 const UserSchema = require('./schema/user.schema');
 const { auth } = require('../../../configs/config').env;
@@ -12,11 +13,16 @@ const { auth } = require('../../../configs/config').env;
  * - validations
  * - virtuals
  */
-UserSchema.pre('save', function save(next) {
+UserSchema.pre('save', async function save(next) {
   // hash password before save
-  if (this.password) {
+  if (this.password && this.isModified('password')) {
     this.password = this.hashPassword(this.password);
     this.salt = crypto.randomBytes(16).toString('base64');
+  }
+  if (!this.activate.token && this.isModified('activate.token')) {
+    // update the active flag
+    this.activate.token = await randomNumber(100000, 999999);
+    this.activate.expireAt = moment().add(1, 'days');
   }
   return next();
 });
@@ -37,26 +43,37 @@ UserSchema.statics = {
   refSchemas: ['Address', 'createdBy'],
 
   async activate({ token }) {
-    const user = await this.find({ 'activate.token': token, 'activate.expireAt': new Date() });
+    const user = await this.findOne({ 'activate.token': token, 'activate.expireAt': { $gte: new Date() } });
     if (!user) {
       throw new Error('Invalid/Expired token, please retry');
     }
-    // update the active flag
+    // check the user is already active
+    if (user.activeFlag) {
+      throw new Error('User is already active, please login');
+    }
+    // update activation token & activate flag
+    user.activate.token = undefined;
+    user.activate.expireAt = new Date();
     user.activeFlag = true;
-    user.save();
+    // save user
+    await user.save();
     // return the user object
     return user;
   },
 
   async reactivate({ email }) {
-    const user = await this.find({ email });
+    const user = await this.findOne({ email });
     if (!user) {
       throw new Error('Email not found to sent activation token');
     }
+    // check the user is already active
+    if (user.activeFlag) {
+      throw new Error('User is already active, please login');
+    }
     // update the active flag
-    user.activate.token = crypto.randomBytes(16).toString('base64');
-    user.activate.expiresAt = moment().add(1, 'days');
-    user.save();
+    user.activate.token = await randomNumber(100000, 999999);
+    user.activate.expireAt = moment().add(1, 'days');
+    await user.save();
     // return the user object
     return user;
   },
@@ -91,7 +108,7 @@ UserSchema.method({
    * @return {String} hashPassword
    */
   hashPassword(password) {
-    return bcrypt.hashSync(password, auth.saltRound);
+    return bcrypt.hashSync(password, parseInt(auth.secretRound, 10));
   },
 
   /**

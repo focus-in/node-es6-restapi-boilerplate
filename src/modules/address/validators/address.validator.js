@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const AddressModel = require('../models/address.model');
 
 module.exports = {
   list: {
@@ -18,7 +19,7 @@ module.exports = {
       authorization: Joi.string().required(),
     },
     params: {
-      activityId: Joi.string().required(),
+      addressId: Joi.string().required(),
     },
   },
   create: {
@@ -26,15 +27,15 @@ module.exports = {
       authorization: Joi.string().required(),
     },
     body: {
-      street: Joi.string().trim(),
-      area: Joi.string().trim(),
-      city: Joi.string().trim(),
-      state: Joi.string().trim(),
+      street: Joi.string().trim().required(),
+      area: Joi.string().trim().required(),
+      city: Joi.string().trim().required(),
+      state: Joi.string().trim().required(),
       landmark: Joi.string().trim(),
-      pincode: Joi.number(),
+      pincode: Joi.number().required(),
       lat: Joi.number(),
       long: Joi.number(),
-      tag: Joi.string(),
+      tag: Joi.string().trim().valid(AddressModel.enum.tags),
     },
   },
   update: {
@@ -42,7 +43,7 @@ module.exports = {
       authorization: Joi.string().required(),
     },
     params: {
-      activityId: Joi.string().required(),
+      addressId: Joi.string().required(),
     },
     body: {
       street: Joi.string().trim(),
@@ -53,7 +54,7 @@ module.exports = {
       pincode: Joi.number(),
       lat: Joi.number(),
       long: Joi.number(),
-      tag: Joi.string(),
+      tag: Joi.string().trim().valid(AddressModel.enum.tags),
     },
   },
   delete: {
@@ -61,7 +62,7 @@ module.exports = {
       authorization: Joi.string().required(),
     },
     params: {
-      activityId: Joi.string().required(),
+      addressId: Joi.string().required(),
     },
   },
 };

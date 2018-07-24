@@ -14,7 +14,30 @@ const UserModel = require('../models/user.model');
 
 
 module.exports = {
+  list: {
+    headers: {
+      authorization: Joi.string().required(),
+    },
+    query: {
+      select: Joi.string().trim().required(),
+      offset: Joi.number(),
+      limit: Joi.number(),
+      order: Joi.string().trim(),
+      sort: Joi.string().trim(),
+    },
+  },
+  get: {
+    headers: {
+      authorization: Joi.string().required(),
+    },
+    params: {
+      userId: Joi.string().required(),
+    },
+  },
   create: {
+    headers: {
+      authorization: Joi.string().required(),
+    },
     body: {
       firstName: Joi.string().trim().required(),
       lastName: Joi.string().trim().required(),
@@ -28,13 +51,32 @@ module.exports = {
       bio: Joi.string(),
     },
   },
-  list: {
-    param: {
-      select: Joi.string().trim().required(),
-      order: Joi.string().trim().required(),
-      sort: Joi.string().trim().email().required(),
-      offset: Joi.string().trim().regex(/[a-zA-Z0-9]{3,30}/).required(),
-      limit: Joi.number().required(),
+  update: {
+    headers: {
+      authorization: Joi.string().required(),
+    },
+    params: {
+      userId: Joi.string().required(),
+    },
+    body: {
+      firstName: Joi.string().trim().required(),
+      lastName: Joi.string().trim().required(),
+      email: Joi.string().trim().email().required(),
+      password: Joi.string().trim().regex(/[a-zA-Z0-9]{3,30}/).required(),
+      phone: Joi.number().required(),
+      // address: addressObj,
+      gender: Joi.string().valid(UserModel.enum.gender),
+      birthDate: Joi.date(),
+      picture: Joi.string(),
+      bio: Joi.string(),
+    },
+  },
+  delete: {
+    headers: {
+      authorization: Joi.string().required(),
+    },
+    params: {
+      userId: Joi.string().required(),
     },
   },
 };
