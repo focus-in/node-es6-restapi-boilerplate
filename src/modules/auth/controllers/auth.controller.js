@@ -59,6 +59,30 @@ exports.signin = async (req, res, next) => {
 };
 
 /**
+ * User oAuth - social login
+ *
+ * @param {object} req request object
+ * @param {object} res response object
+ * @param {Function} next next function handler
+ */
+exports.oauth = async (req, res, next) => {
+  try {
+    console.log('req.user', req.user);
+    // remove all the secured fields from user object
+    req.user = req.user.securedUser(UserModel.secureFields);
+    // generate user auth tokens
+    const token = AuthModel.generateTokens(req.user);
+    // return user auth reponse
+    return res.status(HttpStatus.OK).send({
+      token,
+      user: req.user,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
  * User activate - email registration
  *
  * @param {object} req request object

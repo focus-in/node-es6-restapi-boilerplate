@@ -159,10 +159,7 @@ module.exports = (router) => {
     .get(passport.authenticate('google', { scope: ['email'] }));
 
   router.route('/auth/google/callback')
-    .get(passport.authenticate('google', {
-      successRedirect: '/google/success',
-      failureRedirect: '/',
-    }));
+    .get(passport.authenticate('google'), AuthController.oauth);
 
   router.route('/auth/google/success')
     .get((req, res) => {

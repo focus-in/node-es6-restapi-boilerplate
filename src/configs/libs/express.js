@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const passport = require('passport');
 const queryType = require('query-types');
 // const validation = require('express-validation');
+const auth = require('./auth');
 const logger = require('./logger');
 const error = require('./error');
 require('module-alias/register');
@@ -81,7 +82,12 @@ module.exports.initModels = () => {
  * @param {Object} app express app object
  */
 module.exports.initAuthentication = (app) => {
+  // init passport serialize
+  auth.init(passport);
+
+  // init all passport strategies
   SystemConfig.initStrategies(passport);
+
   // initialize passport
   app.use(passport.initialize());
 };

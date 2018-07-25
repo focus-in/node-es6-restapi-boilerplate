@@ -5,35 +5,46 @@ const { google } = require('../env').auth;
 const UserModel = require('../../modules/user/models/user.model');
 
 module.exports = () => {
-  passport.use('google', new GoogleStrategy(google, (accessToken, refreshToken, profile, cb) => {
-    if (profile) {
-      const user = {};
-      user.firstName = profile.name.givenName;
-      user.lastName = profile.name.familyName;
-      user.email = profile.email;
-      user.gender = profile.gender;
-      user.photos = profile.photos;
-      user.image = profile.image;
-      user.service = {};
-      user.service.provider = profile.provider;
-      user.service.id = profile.id;
-      user.service._raw = JSON.parse(profile._raw);
-      user.activeFlag = true;
+  passport.use('google', new GoogleStrategy(google, async (accessToken, refreshToken, profile, next) => {
+    try {
+      console.log('--------_GOOGLE-OAUTH----------');
+      console.log(profile.photos[0]);
+      console.log(typeof profile.photos[0]);
+      console.log(profile._raw);
+      console.log(accessToken);
+      console.log(refreshToken);
+      console.log('------------GOOGLE-oAUTH-----------');
 
-      const User = new UserModel(user);
-      User.save();
+      // check current user exist in db
+      const existingUser = await UserModel.findOne({ 'service.id': profile.id });
+      if (existingUser) {
+        return next(null, existingUser);
+      }
+
+      // create new user
+      const newUser = new UserModel({
+        firstName: profile.name.givenName,
+        lastName: profile.name.familyName,
+        email: profile.email,
+        gender: profile.gender,
+        // photos: profile.photos,
+        image: {
+          url: profile.image,
+          isDefault: true,
+        },
+        service: {
+          provider: profile.provider,
+          id: profile.id,
+          accessToken,
+          _raw: profile._raw,
+        },
+        activeFlag: true,
+      });
+      await newUser.save();
+      return next(null, newUser);
+    } catch (e) {
+      return next(e, false);
     }
-
-    console.log('--------_GOOGLE-OAUTH----------');
-    console.log(profile);
-    console.log(accessToken);
-    console.log(refreshToken);
-    console.log('------------GOOGLE-oAUTH-----------');
-    cb(false, null);
-    // UserModel.findOrCreate({ googleId: profile.id })
-    //   .then((err, user) => {
-    //     cb(err, user);
-    //   });
   }));
 };
 
