@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const compress = require('compression');
+const session = require('express-session');
 const methodOverride = require('method-override');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -56,6 +57,13 @@ module.exports.initMiddlewares = (app, config) => {
 
   // enable CORS - Cross Origin Resource Sharing
   app.use(cors());
+
+  // express session - added only for twitter oauth (still using oAuth 1)
+  app.use(session({
+    secret: 'session secret 123',
+    resave: true,
+    saveUninitialized: true,
+  }));
 
   // query string for req.query object
   app.use(queryType.middleware());

@@ -8,7 +8,7 @@ module.exports = (router) => {
   /**
    * Add isLoggedIn middleware for all the below requests
    */
-  router.use('/users', isLoggedIn());
+  // router.use('/users', isLoggedIn());
 
   router
     .route('/users')

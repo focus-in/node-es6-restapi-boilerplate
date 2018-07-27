@@ -1,4 +1,5 @@
-const UserModel = require('@modules/user'); // eslint-disable-line
+require('module-alias/register');
+const UserModel = require('@modules/user').model; // eslint-disable-line
 
 module.exports.init = (passport) => {
   // Serialize auth user

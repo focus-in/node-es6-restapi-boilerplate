@@ -68,7 +68,7 @@ const UserSchema = new mongoose.Schema({
     enum: userEnum.roles,
     default: 'user',
   },
-  service: {
+  services: [{
     provider: {
       type: String,
       enum: userEnum.provider,
@@ -83,7 +83,7 @@ const UserSchema = new mongoose.Schema({
     _raw: {
       type: mongoose.Schema.Types.Mixed,
     },
-  },
+  }],
   activate: {
     token: {
       type: String,

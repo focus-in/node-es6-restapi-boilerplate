@@ -67,7 +67,6 @@ exports.signin = async (req, res, next) => {
  */
 exports.oauth = async (req, res, next) => {
   try {
-    console.log('req.user', req.user);
     // remove all the secured fields from user object
     req.user = req.user.securedUser(UserModel.secureFields);
     // generate user auth tokens

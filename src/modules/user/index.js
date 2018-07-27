@@ -1,5 +1,5 @@
 const UserModel = require('./models/user.model');
-const UserScript = require('./scripts/user.script');
+// const UserScript = require('./scripts/user.script');
 const UserMiddleware = require('./middlewares/user.middleware');
 const UserController = require('./controllers/user.controller');
 const UserRouter = require('./routers/user.router');
@@ -22,7 +22,7 @@ module.exports = {
   /**
    * Load the user script
    */
-  script: UserScript,
+  // script: UserScript,
 
   /**
    * Load the user middleware

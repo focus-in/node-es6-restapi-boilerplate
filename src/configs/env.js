@@ -53,11 +53,15 @@ module.exports = {
       clientID: process.env.AUTH_FACEBOOK_ID,
       clientSecret: process.env.AUTH_FACEBOOK_SECRET,
       callbackURL: `${appUrl}/api/v1/auth/facebook/callback`,
+      profileFields: ['id', 'email', 'gender', 'name', 'birthday', 'profileUrl'],
+      enableProof: true,
     },
     twitter: {
       consumerKey: process.env.AUTH_TWITTER_KEY,
       consumerSecret: process.env.AUTH_TWITTER_SECRET,
-      callbackURL: `${appUrl}/api/v1/auth/twitter/callback`,
+      callbackURL: 'http://127.0.0.1:3000/api/v1/auth/twitter/callback',
+      userProfileURL: 'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true',
+      passReqToCallback: true,
     },
   },
   log: {

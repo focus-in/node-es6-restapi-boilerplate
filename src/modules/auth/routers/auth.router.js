@@ -161,24 +161,17 @@ module.exports = (router) => {
   router.route('/auth/google/callback')
     .get(passport.authenticate('google'), AuthController.oauth);
 
-  router.route('/auth/google/success')
-    .get((req, res) => {
-      console.log(res);
-      res.send(res.data);
-    });
-
   router.route('/auth/facebook')
-    .get(passport.authenticate('facebook'));
+    .get(passport.authenticate('facebook', { scope: 'email' }));
 
   router.route('/auth/facebook/callback')
-    .get(passport.authenticate('facebook', { failureRedirect: '/' }, (req, res) => {
-      console.log('callback susscess response');
-      console.log(res.data);
-      res.send('success');
-    }));
+    .get(passport.authenticate('facebook'), AuthController.oauth);
 
-  router.route('/auth/facebook/success')
-    .get((req, res) => { res.send(res.data); });
+  router.route('/auth/twitter')
+    .get(passport.authenticate('twitter', { session: false }));
+
+  router.route('/auth/twitter/callback')
+    .get(passport.authenticate('twitter'), AuthController.oauth);
 
   return router;
 };
