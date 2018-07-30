@@ -1,6 +1,6 @@
 const glob = require('glob');
 require('module-alias/register');
-const assets = require('@config/assets'); // eslint-disable-line
+const assets = require('@configs/assets'); // eslint-disable-line
 
 /**
  * Load all the modules models

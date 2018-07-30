@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const morganBody = require('morgan-body');
 const bodyParser = require('body-parser');
 const compress = require('compression');
 const session = require('express-session');
@@ -40,6 +41,9 @@ module.exports.initMiddlewares = (app, config) => {
   const { env, morganLogStream } = config;
   // request logging. dev: console | production: file
   app.use(morgan(env.log.format, morganLogStream));
+
+  // log request & response body also in the logger
+  morganBody(app, morganLogStream);
 
   // parse body params and attache them to req.body
   app.use(bodyParser.json());

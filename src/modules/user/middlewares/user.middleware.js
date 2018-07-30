@@ -1,5 +1,5 @@
 require('module-alias/register');
-const { middleware } = require('@system'); // eslint-disable-line
+const { middleware } = require('@system');
 const UserModel = require('../models/user.model');
 
 module.exports.queryBuilder = (req, res, next) => {
