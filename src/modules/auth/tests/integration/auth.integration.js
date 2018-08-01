@@ -3,22 +3,38 @@
 const bcrypt = require('bcrypt');
 const HttpStatus = require('http-status');
 const request = require('supertest');
-const { expect } = require('chai');
+const { expect, assert } = require('chai');
 require('module-alias/register');
-const app = require('@configs/libs/express').init; // eslint-disable-line
+const index = require('@root/index'); // eslint-disable-line
 const { auth } = require('@configs/config').env; // eslint-disable-line
 const { model: User } = require('@modules/user'); // eslint-disable-line
 // const { model: Auth } = require('@modules/auth'); // eslint-disable-line
 
-describe('Users API Integration Test', () => {
+describe('Auth API Integration Test', () => {
+  // Define the app from server
+  let app;
+
   let dbUsers;
   let user;
-  let admin;
+  // let admin;
   // let adminAuthToken;
   // let userAuthToken;
 
   const password = '123456';
   const passwordHashed = bcrypt.hashSync(password, parseInt(auth.secretRound, 10));
+
+  before(() => {
+    index.then((server) => {
+      app = server;
+    });
+  });
+
+  after(() => {
+    index.then((server) => {
+      server.close();
+    });
+  });
+
   beforeEach(async () => {
     dbUsers = {
       dbadmin: {
@@ -55,15 +71,19 @@ describe('Users API Integration Test', () => {
   });
 
 
-  describe('Create User POST: v1/users', () => {
-    it('should create a new user when request is ok', () => {
+  describe('Signup User POST: v1/auth/signup', () => {
+    it('should register a new user when request is ok', () => {
       return request(app)
-        .post('/api/v1/users')
+        .post('/api/v1/auth/signup')
         .send(user)
+        .expect('Content-Type', /json/)
         .expect(HttpStatus.CREATED)
         .then((res) => {
-          delete admin.password;
-          expect(res.body).to.include(admin);
+          assert(user.email, res.body.email);
+          assert(user.phone, res.body.phone);
+          // expect(res.body).to.include(user);
+          expect(res.body).to.have.a.property('_id');
+          // expect(res.body).to.have.a.property('password', 'firstName', 'salt');
         });
     });
   });

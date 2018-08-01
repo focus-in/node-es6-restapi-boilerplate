@@ -7,8 +7,22 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Launch",
       "program": "${workspaceFolder}/index.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Test",
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "program": "${workspaceRoot}/node_modules/.bin/mocha",
+      "args": [
+        "${workspaceFolder}/src/modules/*/tests/integration/*",
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     }
   ]
 }

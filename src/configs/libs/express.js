@@ -19,7 +19,7 @@ const SystemConfig = require('@system').config; // eslint-disable-line
 /**
  * Init - adding application variables to app object
  * @param {Object} app express app object
- * @param {Class} config config class with env properties & methods
+ * @param {Object} config config class with env properties & methods
  */
 module.exports.initLocalVariables = (app, config) => {
   const { env, packageJson } = config;
@@ -35,7 +35,7 @@ module.exports.initLocalVariables = (app, config) => {
 /**
  * Init dependent middlewares to app object
  * @param {Object} app express app object
- * @param {Class} config config class with env properties & methods
+ * @param {Object} config config class with env properties & methods
  */
 module.exports.initMiddlewares = (app, config) => {
   const { env, morganLogStream } = config;
@@ -160,7 +160,9 @@ module.exports.initErrorHandler = (app) => {
 
 /**
  * Initialize the app with middlewares
- * @param {Class} config config class with env properties & methods
+ *
+ * @param {Object} config config class with env properties & methods
+ * @return {Object} app express object
  */
 module.exports.init = (config) => {
   // Initialize express app & other middlewares
@@ -195,9 +197,9 @@ module.exports.init = (config) => {
  * @param {Object} app express app object
  * @param {Object} conn mongoose connection object
  */
-module.exports.listen = (app, conn) => {
+module.exports.listen = async (app, conn) => {
   if (conn) {
-    app.listen(app.port, () => {
+    const server = await app.listen(app.port, () => {
       logger.info('--');
       logger.info(app.title);
       logger.info();
@@ -208,5 +210,9 @@ module.exports.listen = (app, conn) => {
       logger.info(`Started At:      ${new Date()}`);
       logger.info('--');
     });
+
+    return server;
   }
+
+  return process.exit(1);
 };

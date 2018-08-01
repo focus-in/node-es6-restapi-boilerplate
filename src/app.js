@@ -29,12 +29,12 @@ module.exports.start = async () => {
     // connect mongodb with mongoose
     const conn = await mongoose.connect(config.env);
     // express start & listen to server port
-    await express.listen(app, conn);
-    // return
-    return;
+    const server = await express.listen(app, conn);
+    // return server
+    return server;
   } catch (error) {
     // log the error & exit the process on any errors
     logger.error(error);
-    process.exit(1);
+    return process.exit(1);
   }
 };
