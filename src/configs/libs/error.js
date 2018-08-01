@@ -12,7 +12,7 @@ const errorDuplicate = (err) => {
   // get the duplicate key index
   const begin = err.errmsg.lastIndexOf('index: ') + 7;
   let fieldName = err.errmsg.substring(begin, err.errmsg.lastIndexOf('_1'));
-  fieldName = `${fieldName.charAt(0).toUpperCase()}${fieldName.slice(1)} already exists`;
+  fieldName = `${fieldName.charAt(0).toUpperCase()}${fieldName.slice(1)}`;
   // check email/userName validation errors
   return {
     status: HttpStatus.CONFLICT,

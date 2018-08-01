@@ -15,11 +15,11 @@ module.exports = (passport) => {
         }
         if (user.activeFlag !== true) {
           // HACK: return the activation url for dev environment
-          let tokenUrl;
+          let devHint = '';
           if (process.env.NODE_ENV === 'development') {
-            tokenUrl = `http://localhost:3000/api/v1/auth/activate/${user.activate.token}`;
+            devHint = ` @dev hint url http://localhost:3000/api/v1/auth/activate/${user.activate.token}`;
           }
-          return next(new Error(`User not active, please check your registered email to activate @dev hack url ${tokenUrl}`), false);
+          return next(new Error(`User not active, please check your registered email to activate${devHint}`), false);
         }
         if (user.deleteFlag) {
           return next(new Error('Cannot login, please contact admin for more details'), false);
