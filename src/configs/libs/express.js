@@ -125,9 +125,14 @@ module.exports.initRouters = (app) => {
   app.use('/status', (req, res) => res.send('{APP_NAME} running in {ENV} {DATE}'));
 
   // home route
-  app.use('/', (req, res) => {
-    // TODO: this might load with another landing page
-    res.send('Welcome to keviveks Node Starter Boilerplate');
+  // app.use('/', (req, res) => {
+  //   // TODO: this might load with another landing page
+  //   res.send({ name: 'Welcome', message: 'Welcome to keviveks Node Starter Boilerplate' });
+  // });
+
+  // 404 error route
+  app.use('*', (req, res) => {
+    res.status(404).send({ name: 'Error', message: 'LOL! you got a wrong url' });
   });
 };
 

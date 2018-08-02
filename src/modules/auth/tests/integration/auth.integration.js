@@ -247,19 +247,129 @@ describe('Auth API Integration Test', () => {
     });
   });
 
-  describe('Activate User POST: /api/v1/auth/activate/:token', () => {
-    it('should return active user when token is valid', () => {
-      const token = 'active token';
+  describe('Activate User GET: /api/v1/auth/activate/:token', () => {
+    // TODO:
+    // it('should return active user when token is valid', () => {
+    //   const token = 'active token';
+    //   return request(app)
+    //     .get(`/api/v1/auth/activate/${token}`)
+    //     .expect('Content-Type', /json/)
+    //     .expect(HttpStatus.OK)
+    //     .then((res) => {
+    //       expect(res.body.user.email).is.equal(dbUsers.admin.email);
+    //       expect(res.body.token).to.have.a.property('token');
+    //       expect(res.body.token).to.have.a.property('refreshToken');
+    //       expect(res.body.token).to.have.a.property('expiresIn');
+    //     });
+    // });
+
+    it('should return bad request error when token is invalid', () => {
+      const token = 'invalidtoken'; // TODO:
       return request(app)
         .get(`/api/v1/auth/activate/${token}`)
         .expect('Content-Type', /json/)
-        .expect(HttpStatus.OK)
+        .expect(HttpStatus.BAD_REQUEST)
         .then((res) => {
-          expect(res.body.user.email).is.equal(dbUsers.admin.email);
-          expect(res.body.token).to.have.a.property('token');
-          expect(res.body.token).to.have.a.property('refreshToken');
-          expect(res.body.token).to.have.a.property('expiresIn');
+          expect(res.body.name).is.equal('Error');
+          expect(res.body.message).is.equal('Invalid/Expired token, please retry');
+        });
+    });
+
+    it('should return bad request error when token is expired', () => {
+      const token = 'expiredtoken'; // TODO:
+      return request(app)
+        .get(`/api/v1/auth/activate/${token}`)
+        .expect('Content-Type', /json/)
+        .expect(HttpStatus.BAD_REQUEST)
+        .then((res) => {
+          expect(res.body.name).is.equal('Error');
+          expect(res.body.message).is.equal('Invalid/Expired token, please retry');
+        });
+    });
+
+    it('should return 404 error when token is empty', () => {
+      const token = '';
+      return request(app)
+        .get(`/api/v1/auth/activate/${token}`)
+        .expect('Content-Type', /json/)
+        .expect(HttpStatus.NOT_FOUND)
+        .then((res) => {
+          expect(res.body.name).is.equal('Error');
+          expect(res.body.message).is.equal('LOL! you got a wrong url');
         });
     });
   });
+
+  describe('Reactivate User POST: /api/v1/auth/reactivate', () => {
+    it('should return user details when email is valid & not active', () => {
+      return request(app)
+        .post('/api/v1/auth/reactivate')
+        .send({ email: dbUsers.user.email })
+        .expect('Content-Type', /json/)
+        .expect(HttpStatus.OK)
+        .then((res) => {
+          expect(res.body).to.have.a.property('_id');
+          expect(res.body.activeFlag).is.equal(false);
+          expect(res.body.email).is.equal(dbUsers.user.email);
+          expect(res.body).to.not.have.property(User.secureFields.join(','));
+        });
+    });
+
+    it('should return error message when email is valid & already active', () => {
+      return request(app)
+        .post('/api/v1/auth/reactivate')
+        .send({ email: dbUsers.admin.email })
+        .expect('Content-Type', /json/)
+        .expect(HttpStatus.BAD_REQUEST)
+        .then((res) => {
+          expect(res.body).to.have.a.property('errors');
+          expect(res.body.name).is.equal('Error');
+          expect(res.body.message).is.equal('User is already active, please login');
+        });
+    });
+
+    it('should return error message when email is invalid', () => {
+      return request(app)
+        .post('/api/v1/auth/reactivate')
+        .send({ email: 'invalid@email.com' })
+        .expect('Content-Type', /json/)
+        .expect(HttpStatus.BAD_REQUEST)
+        .then((res) => {
+          expect(res.body).to.have.a.property('errors');
+          expect(res.body.name).is.equal('Error');
+          expect(res.body.message).is.equal('Email not found to sent activation token');
+        });
+    });
+
+    it('should return validation error message when email is not set', () => {
+      return request(app)
+        .post('/api/v1/auth/reactivate')
+        .send({ email: '' })
+        .expect('Content-Type', /json/)
+        .expect(HttpStatus.BAD_REQUEST)
+        .then((res) => {
+          expect(res.body).to.have.a.property('errors');
+          expect(res.body.name).is.equal('Error');
+          expect(res.body.message).is.equal('validation error');
+          expect(res.body.errors[0].field).to.include('email');
+          expect(res.body.errors[0].messages).to.include('"email" is not allowed to be empty');
+        });
+    });
+  });
+
+  // describe('Refresh Auth token POST: /api/v1/auth/refresh', () => {
+  //   it('should return user details when email is valid & not active', () => {
+  //     return request(app)
+  //       .post('/api/v1/auth/refresh')
+  //       .send({ email: dbUsers.user.email })
+  //       .expect('Content-Type', /json/)
+  //       .expect(HttpStatus.OK)
+  //       .then((res) => {
+  //         expect(res.body).to.have.a.property('_id');
+  //         expect(res.body.activeFlag).is.equal(false);
+  //         expect(res.body.email).is.equal(dbUsers.user.email);
+  //         expect(res.body).to.not.have.property(User.secureFields.join(','));
+  //       });
+  //   });
+  // });
 });
