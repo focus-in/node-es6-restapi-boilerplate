@@ -1,11 +1,15 @@
-const moment = require('moment');
 const pug = require('pug');
-const mailer = require('../../../configs/libs/mailer');
-const messenger = require('../../../configs/libs/messenger');
-const { admin, auth } = require('../../../configs/config').env;
-const Auth = require('../models/auth.model');
+require('module-alias/register');
+const mailer = require('@configs/libs/mailer'); // eslint-disable-line
+const messenger = require('@configs/libs/messenger'); // eslint-disable-line
+const { admin } = require('@configs/config').env; // eslint-disable-line
 
-exports.activationEmail = (user) => {
+/**
+ * Sent email with activation link
+ *
+ * @param {Object} user user object
+ */
+exports.activationMail = (user) => {
   mailer.sendMail({
     from: admin.email,
     to: user.email,
@@ -14,27 +18,39 @@ exports.activationEmail = (user) => {
   });
 };
 
+/**
+ * Send otp sms to phone
+ *
+ * @param {Object} user user object
+ */
 exports.activationPhone = (user) => {
   messenger.sendSms(user.phone, 'user otp');
 };
 
-exports.tokenResponse = async (user) => {
-  const tokenType = 'Bearer';
-  const accessToken = await Auth.accessToken(user);
-  const refreshToken = await Auth.refreshToken(user);
-  const expiresIn = moment().add(auth.expiresIn, 'minutes');
-  return {
-    tokenType, accessToken, refreshToken, expiresIn,
-  };
+/**
+ * Send user activated success mail
+ *
+ * @param {Object} user user object
+ */
+exports.activatedMail = (user) => {
+  mailer.sendMail({
+    from: admin.email,
+    to: user.email,
+    subject: 'User activated successfully',
+    html: pug.renderFile(`${process.cwd()}/src/modules/auth/templates/user.activated.pug`, user),
+  });
 };
 
-exports.setUserActivate = (user) => {
-  // generate activate token
-  const activate = {
-    token: 'AS123V',
-    expireAt: new Date(),
-  };
-
-  user.activate = activate;
-  user.save();
+/**
+ * Send reset link in forgot mail
+ *
+ * @param {Object} user user object
+ */
+exports.forgotMail = (user) => {
+  mailer.sendMail({
+    from: admin.email,
+    to: user.email,
+    subject: 'User forgot mail',
+    html: pug.renderFile(`${process.cwd()}/src/modules/auth/templates/user.forgot.pug`, user),
+  });
 };

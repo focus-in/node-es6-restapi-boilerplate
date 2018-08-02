@@ -6,7 +6,7 @@ const AuthValidator = require('../validators/auth.validator');
 module.exports = (router) => {
   router.route('/auth/signup')
     /**
-     * @api {post} /signup Signup user
+     * @api {post} /auth/signup Signup user
      * @apiDescription Register user with direct email address
      * @apiVersion 0.0.1
      * @apiName EmailSignup
@@ -35,7 +35,7 @@ module.exports = (router) => {
 
   router.route('/auth/signin')
     /**
-     * @api {post} /signin Signin User
+     * @api {post} /auth/signin Signin User
      * @apiDescription User login with direct email address
      * @apiVersion 0.0.1
      * @apiName EmailSignin
@@ -62,7 +62,7 @@ module.exports = (router) => {
 
   router.route('/auth/activate/:token')
     /**
-     * @api {get} /activate/:token Activate user registration
+     * @api {get} /auth/activate/:token Activate user registration
      * @apiDescription Activate user with token sent in email or phone
      * @apiVersion 0.0.1
      * @apiName ActivateUser
@@ -80,7 +80,7 @@ module.exports = (router) => {
 
   router.route('/auth/reactivate')
     /**
-     * @api {post} /reactivate Resend activation token to registered user
+     * @api {post} /auth/reactivate Resend activation token to registered user
      * @apiDescription Resend activation token to registered user in email or phone
      * @apiVersion 0.0.1
      * @apiName ReActivateUser
@@ -98,7 +98,7 @@ module.exports = (router) => {
 
   router.route('/auth/refresh')
     /**
-     * @api {post} /refresh Refresh Auth Token
+     * @api {post} /auth/refresh Refresh Auth Token
      * @apiDescription Refresh expired accessToken
      * @apiVersion 0.0.1
      * @apiName RefreshToken
@@ -120,7 +120,7 @@ module.exports = (router) => {
 
   router.route('/auth/forgot')
     /**
-     * @api {post} /forgot Forgot password
+     * @api {post} /auth/forgot Forgot password
      * @apiDescription Forgot password request to generate reset token to update user password
      * @apiVersion 0.0.1
      * @apiName ForgotPassword
@@ -136,16 +136,16 @@ module.exports = (router) => {
      */
     .post(validate(AuthValidator.forgot), AuthController.forgot);
 
-  router.route('/auth/reset/:token')
+  router.route('/auth/reset')
     /**
-     * @api {post} /reset/:token Reset user forgot Password
+     * @api {post} /auth/reset/:token Reset user forgot Password
      * @apiDescription Reset user password with new password
      * @apiVersion 0.0.1
      * @apiName ResetPassword
      * @apiGroup Auth
      * @apiPermission public
      *
-     * @apiParam  {String}  :token      User's reset password token
+     * @apiParam  {String}  token      User's reset password token
      * @apiParam  {String}  password    New Password
      *
      * @apiSuccess {String}  message      Password reset success message
@@ -156,18 +156,57 @@ module.exports = (router) => {
     .post(validate(AuthValidator.reset), AuthController.reset);
 
   router.route('/auth/google')
+    /**
+     * @api {post} /auth/google Google oAuth login
+     * @apiDescription Login with your google credentials works direct url in browser
+     * @apiVersion 0.0.1
+     * @apiName GoogleOauth
+     * @apiGroup Auth
+     * @apiPermission public
+     *
+     * @apiSuccess {String}  html User oauth signin success page
+     *
+     * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
+     * @apiError (Unauthorized 401)  Unauthorized     Incorrect resetToken
+     */
     .get(passport.authenticate('google', { scope: ['email'] }));
 
   router.route('/auth/google/callback')
     .get(passport.authenticate('google'), AuthController.oauth);
 
   router.route('/auth/facebook')
+    /**
+     * @api {post} /auth/facebook Facebook oAuth login
+     * @apiDescription Login with your facebook credentials works direct url in browser
+     * @apiVersion 0.0.1
+     * @apiName FacebookOauth
+     * @apiGroup Auth
+     * @apiPermission public
+     *
+     * @apiSuccess {String}  html User oauth signin success page
+     *
+     * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
+     * @apiError (Unauthorized 401)  Unauthorized     Incorrect resetToken
+     */
     .get(passport.authenticate('facebook', { scope: 'email' }));
 
   router.route('/auth/facebook/callback')
     .get(passport.authenticate('facebook'), AuthController.oauth);
 
   router.route('/auth/twitter')
+    /**
+     * @api {post} /auth/twitter Twitter oAuth login
+     * @apiDescription Login with your twitter credentials works direct url in browser
+     * @apiVersion 0.0.1
+     * @apiName TwitterOauth
+     * @apiGroup Auth
+     * @apiPermission public
+     *
+     * @apiSuccess {String}  html User oauth signin success page
+     *
+     * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
+     * @apiError (Unauthorized 401)  Unauthorized     Incorrect resetToken
+     */
     .get(passport.authenticate('twitter', { session: false }));
 
   router.route('/auth/twitter/callback')

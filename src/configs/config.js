@@ -1,5 +1,6 @@
 const env = require('./env');
-const packageJson = require('../../package.json');
+require('module-alias/register');
+const packageJson = require('@root/package.json'); // eslint-disable-line
 const logger = require('./libs/logger');
 
 const config = {};

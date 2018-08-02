@@ -1,5 +1,6 @@
 const LocalStrategy = require('passport-local').Strategy;
-const UserModel = require('../../modules/user/models/user.model');
+require('module-alias/register');
+const { model: UserModel } = require('@modules/user'); // eslint-disable-line
 
 module.exports = (passport) => {
   // Use local strategy

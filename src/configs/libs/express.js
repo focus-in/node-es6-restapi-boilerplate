@@ -42,8 +42,10 @@ module.exports.initMiddlewares = (app, config) => {
   // request logging. dev: console | production: file
   app.use(morgan(env.log.format, morganLogStream));
 
-  // log request & response body also in the logger
-  morganBody(app, morganLogStream);
+  if (env.env === 'production') {
+    // log request & response body also in the logger
+    morganBody(app, morganLogStream);
+  }
 
   // parse body params and attache them to req.body
   app.use(bodyParser.json());
@@ -102,6 +104,13 @@ module.exports.initAuthentication = (app) => {
 
   // initialize passport
   app.use(passport.initialize());
+};
+
+/**
+ * Initialize all app module events
+ */
+module.exports.initEvents = () => {
+  SystemConfig.initEvents();
 };
 
 /**
@@ -187,6 +196,9 @@ module.exports.init = (config) => {
 
   // init authentication strategies
   this.initAuthentication(app);
+
+  // init events
+  this.initEvents();
 
   // init router
   this.initRouters(app);

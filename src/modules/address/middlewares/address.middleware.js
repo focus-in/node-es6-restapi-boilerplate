@@ -1,21 +1,22 @@
-const CoreMiddleware = require('../../../core/middlewares/core.middleware');
+require('module-alias/register');
+const { middleware } = require('@system'); // eslint-disable-line
 const Address = require('../models/address.model');
 
 module.exports.queryBuilder = (req, res, next) => {
   // build the select fields for the request
-  req.query = CoreMiddleware.selectBuilder(req.query, Address.secureFields);
+  req.query = middleware.selectBuilder(req.query, Address.secureFields);
 
   // build the filter fields for the request
-  req.query = CoreMiddleware.filterBuilder(req.query);
+  req.query = middleware.filterBuilder(req.query);
 
   // build the select fields for the request
-  // req.query = CoreMiddleware.withBuilder(req.query, Address.refSchemas);
+  req.query = middleware.withBuilder(req.query);
 
   // build the filter fields for the request
-  req.query = CoreMiddleware.limitBuilder(req.query);
+  req.query = middleware.limitBuilder(req.query);
 
   // build the select fields for the request
-  req.query = CoreMiddleware.sortBuilder(req.query);
+  req.query = middleware.sortBuilder(req.query);
 
   return next();
 };

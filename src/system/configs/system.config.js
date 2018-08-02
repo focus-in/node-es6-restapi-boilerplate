@@ -2,6 +2,8 @@ const glob = require('glob');
 require('module-alias/register');
 const assets = require('@configs/assets'); // eslint-disable-line
 
+const SystemEvent = require('../events/system.event');
+
 /**
  * Load all the modules models
  */
@@ -27,8 +29,22 @@ exports.initStrategies = (passport) => {
 };
 
 /**
+ * Init all module events with system event param
+ *
+ * @param {Class} event class
+ */
+exports.initEvents = () => {
+  // Get all strategy files
+  const eventFiles = glob.sync(`${process.cwd()}/${assets.events}`);
+  // Load & init all the auth strategies
+  // eslint-disable-next-line
+  eventFiles.map((event) => require(event)(SystemEvent));
+};
+
+/**
  * Init all module routers
  *
+ * @param {Object} app express app Object
  * @param {Object} router express router object
  */
 exports.initV1Routers = (router) => {

@@ -15,6 +15,10 @@ const ActivitySchema = new mongoose.Schema({
     maxlength: 64,
     trim: true,
   },
+  action: {
+    id: { type: mongoose.Schema.Types.ObjectId },
+    module: { type: String },
+  },
   message: {
     type: String,
     maxlength: 64,

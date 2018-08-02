@@ -33,11 +33,22 @@ const UserSchema = new mongoose.Schema({
   salt: {
     type: String,
   },
+  _organisationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organisation',
+  },
+  organisationEmail: {
+    type: String,
+    match: /^\S+@\S+\.\S+$/,
+    trim: true,
+    lowercase: true,
+  },
   phone: {
     type: Number,
     index: true,
     unique: true,
-    maxlength: 10,
+    min: 1000000000,
+    minlength: 9999999999,
   },
   _address: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -67,6 +78,19 @@ const UserSchema = new mongoose.Schema({
     index: true,
     enum: userEnum.roles,
     default: 'user',
+  },
+  _vehicles: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Vehicle',
+  }],
+  wallet: {
+    amount: {
+      type: Number,
+      default: 10,
+    },
+    lastUpdate: {
+      type: Date,
+    },
   },
   services: [{
     provider: {
@@ -100,7 +124,20 @@ const UserSchema = new mongoose.Schema({
       type: Date,
     },
   },
+  _vouchers: [{
+    voucherId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Voucher',
+    },
+    credit: { type: Number },
+    usedAt: { type: Date },
+    status: { type: String },
+  }],
   activeFlag: {
+    type: Boolean,
+    default: false,
+  },
+  verifiedFlag: {
     type: Boolean,
     default: false,
   },
@@ -112,8 +149,8 @@ const UserSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-UserSchema.index({ deleted: 1, activeFlag: 1 });
-UserSchema.index({ email: 1, createdAt: -1 });
+UserSchema.index({ deleted: 1, activeFlag: 1, verifiedFlag: 1 });
+UserSchema.index({ verifiedFlag: 1, email: 1, createdAt: -1 });
 
 /**
  * Add mongoose soft delete plugin with deleted user & time stamp

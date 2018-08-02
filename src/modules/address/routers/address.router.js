@@ -1,6 +1,7 @@
 const validation = require('express-validation');
 const AddressController = require('../controllers/address.controller');
 const AddressValidator = require('../validators/address.validator');
+const AddressMiddleware = require('../middlewares/address.middleware');
 require('module-alias/register');
 const { isLoggedIn } = require('@system').authenticate; // eslint-disable-line
 
@@ -44,7 +45,7 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .get(validation(AddressValidator.list), AddressController.list)
+    .get(validation(AddressValidator.list), AddressMiddleware.queryBuilder, AddressController.list)
     /**
      * @api {post} /address Save new Address
      * @apiDescription Create new address
@@ -107,7 +108,7 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .get(validation(AddressValidator.get), AddressController.get)
+    .get(validation(AddressValidator.get), AddressMiddleware.queryBuilder, AddressController.get)
     /**
      * @api {put} /address/:addressId Update address details
      * @apiDescription Update address

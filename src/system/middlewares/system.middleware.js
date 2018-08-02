@@ -30,8 +30,8 @@ exports.selectBuilder = (query, secureFields) => {
 exports.filterBuilder = (query) => {
   // check or define object for filter
   query.filter = (query.filter) ? query.filter : {};
-  // add default values to the query filter - deleteFlag
-  query.filter.deleteFlag = false;
+  // add default values to the query filter - deleted
+  query.filter.deleted = false;
 
   return query;
 };
@@ -42,11 +42,13 @@ exports.filterBuilder = (query) => {
  * @param {object} query request query object for select fields
  * @return {object} query with filter fields object
  */
-exports.withBuilder = (query, refSchemas) => {
-  // check or define object for with fields
-  query.with = (query.with) ? query.with : {};
-  console.log(refSchemas);
-
+exports.withBuilder = (query) => {
+  // define the populates array in with fields
+  query.populates = [];
+  Object.keys(query.with || {}).forEach(async (path) => {
+    const select = query.with[path].split(',').join(' ');
+    query.populates.push({ path, select });
+  });
   return query;
 };
 

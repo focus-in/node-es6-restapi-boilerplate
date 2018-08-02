@@ -4,7 +4,8 @@ const moment = require('moment');
 const jwt = require('jwt-simple');
 
 const AuthSchema = require('./schema/auth.schema');
-const { auth } = require('../../../configs/config').env;
+require('module-alias/register');
+const { auth } = require('@configs/config').env; // eslint-disable-line
 
 /**
  * Auth object methods

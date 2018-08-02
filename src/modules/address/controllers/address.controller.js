@@ -1,5 +1,7 @@
 const HttpStatus = require('http-status');
 const Address = require('../models/address.model');
+require('module-alias/register');
+const { event } = require('@system'); // eslint-disable-line
 
 /**
  * Load address and append to req.
@@ -29,20 +31,23 @@ exports.load = async (req, res, next, id) => {
  */
 exports.list = async (req, res, next) => {
   try {
-    // regex address name for suggestion
-    if (req.query.filter && req.query.filter.address) {
-      req.query.filter.address = {
-        $regex: new RegExp(`^${req.query.filter.address}`, 'i'),
-      };
-    }
+    // count the documents
     const count = await Address.countDocuments(req.query.filter);
-    const addresses = await Address.find()
+    // find the documents with select & filter
+    const addresses = await Address.find(req.query.filter)
       .select(req.query.select)
       .skip(req.query.offset)
       .limit(req.query.limit)
       .sort(req.query.sortBy)
       .exec();
-    return res.json({
+
+    // populate ref schema fields
+    if (req.query.populates.length) {
+      await Promise.all(Object.values(req.query.populates)
+        .map(({ path, select }) => Address.populate(addresses, { path, select })));
+    }
+    // return count & list
+    return res.send({
       count,
       addresses,
     });
@@ -59,12 +64,16 @@ exports.list = async (req, res, next) => {
  * @param {Function} next next handler function
  * @return {Object} Address object
  */
-exports.get = (req, res, next) => {
+exports.get = async (req, res, next) => {
   try {
-    // populate the address with other objects
-    // req.locals.address.withPopulate(req.query.with);
+    const { address } = req.locals;
+    // populate ref schema fields
+    if (req.query.populates.length) {
+      await Promise.all(Object.values(req.query.populates)
+        .map(({ path, select }) => Address.populate(address, { path, select })));
+    }
     // return the address data
-    return res.json(req.locals.address);
+    return res.send(address);
   } catch (e) {
     return next(e);
   }
@@ -80,12 +89,13 @@ exports.get = (req, res, next) => {
  */
 exports.create = async (req, res, next) => {
   try {
-    // add the user object
-    req.body._userId = req.user;
     // save the new address
     const address = new Address(req.body);
-    await address.save();
-    return res.status(HttpStatus.CREATED).json(address);
+    await address.save({ _userId: req.user._id });
+    // log the event in activity
+    event.emit('address-create', address);
+    // return created data
+    return res.status(HttpStatus.CREATED).send(address);
   } catch (e) {
     return next(e);
   }
@@ -104,6 +114,9 @@ exports.update = async (req, res, next) => {
     const address = Object.assign(req.locals.address, req.body);
     // save & return success response
     await address.save();
+    // log the event in activity
+    event.emit('address-update', address);
+    // return updated data
     return res.status(HttpStatus.OK).send(address);
   } catch (e) {
     return next(e);
@@ -123,6 +136,9 @@ exports.delete = async (req, res, next) => {
     const { address } = req.locals;
     // soft delete address
     await address.delete(req.user._id);
+    // log the event in activity
+    event.emit('address-delete', address);
+    // return no content
     return res.status(HttpStatus.NO_CONTENT).end();
   } catch (e) {
     return next(e);

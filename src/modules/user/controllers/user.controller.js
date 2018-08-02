@@ -1,5 +1,5 @@
 const HttpStatus = require('http-status');
-const UserModel = require('../models/user.model');
+const User = require('../models/user.model');
 
 /**
  * Load user and append to req.
@@ -11,7 +11,7 @@ const UserModel = require('../models/user.model');
  */
 exports.load = async (req, res, next, id) => {
   try {
-    const user = await UserModel.findById(id);
+    const user = await User.findById(id);
     req.locals = { user };
     return next();
   } catch (e) {
@@ -30,23 +30,52 @@ exports.load = async (req, res, next, id) => {
 exports.list = async (req, res, next) => {
   try {
     // regex user name for suggestion
-    if (req.query.filter && req.query.filter.user) {
-      req.query.filter.user = {
-        $regex: new RegExp(`^${req.query.filter.user}`, 'i'),
+    if (req.query.filter && req.query.filter.email) {
+      req.query.filter.email = {
+        $regex: new RegExp(`^${req.query.filter.email}`, 'i'),
       };
     }
-    const count = await UserModel.countDocuments(req.query.filter);
-    const users = await UserModel.find()
+    // count the documents
+    const count = await User.countDocuments(req.query.filter);
+    // find with filters
+    const users = await User.find(req.query.filter)
       .select(req.query.select)
       .skip(req.query.offset)
       .limit(req.query.limit)
       .sort(req.query.sortBy)
       .exec();
 
+      // populate ref schema fields
+    if (req.query.populates.length) {
+      await Promise.all(Object.values(req.query.populates)
+        .map(({ path, select }) => User.populate(users, { path, select })));
+    }
+    // return count & list
     return res.send({
       count,
       users,
     });
+  } catch (e) {
+    return next(e);
+  }
+};
+
+/**
+ * Get loggedin user profile
+ *
+ * @param {Object} req request object
+ * @param {Object} res response object
+ * @param {Function} next next handler function
+ * @return {Object} User object
+ */
+exports.profile = (req, res, next) => {
+  try {
+    // populate the user with other objects
+    // req.locals.user.withPopulate(req.query.with);
+    // remove all the secured fields from user object
+    req.user.securedUser(User.secureFields);
+    // return the user data
+    return res.json(req.user);
   } catch (e) {
     return next(e);
   }
@@ -64,6 +93,8 @@ exports.get = (req, res, next) => {
   try {
     // populate the user with other objects
     // req.locals.user.withPopulate(req.query.with);
+    // remove all the secured fields from user object
+    req.locals.user.securedUser(User.secureFields);
     // return the user data
     return res.json(req.locals.user);
   } catch (e) {
@@ -81,10 +112,10 @@ exports.get = (req, res, next) => {
  */
 exports.create = async (req, res, next) => {
   try {
-    const User = new UserModel(req.body);
-    const user = await User.save();
+    const user = new User(req.body);
+    await user.save();
     // remove the user secured fields
-    user.securedUser(UserModel.secureFields);
+    user.securedUser(User.secureFields);
     // set the status & return the user object
     return res.status(HttpStatus.CREATED).send(user);
   } catch (e) {
@@ -106,7 +137,7 @@ exports.update = async (req, res, next) => {
     // save & return success response
     await user.save();
     // remove the user secured fields
-    user.securedUser(UserModel.secureFields);
+    user.securedUser(User.secureFields);
     // set the status & return the user object
     return res.status(HttpStatus.OK).send(user);
   } catch (e) {

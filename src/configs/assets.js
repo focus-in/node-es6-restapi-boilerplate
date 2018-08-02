@@ -5,6 +5,7 @@ module.exports = {
   modules: 'src/modules/*/*.js',
   models: 'src/modules/*/models/*.js',
   routers: 'src/modules/*/routers/*.js',
+  events: 'src/modules/*/events/*.js',
   scripts: 'src/modules/*/scripts/*.js',
   configs: 'src/modules/*/configs/*.js',
   all: ['src/configs/**/*.js', 'src/system/**/*.js', 'src/modules/**/*.js'],

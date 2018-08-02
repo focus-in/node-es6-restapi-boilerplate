@@ -1,5 +1,5 @@
 require('module-alias/register');
-const { middleware } = require('@system');
+const { middleware } = require('@system'); // eslint-disable-line
 const UserModel = require('../models/user.model');
 
 module.exports.queryBuilder = (req, res, next) => {
@@ -10,7 +10,7 @@ module.exports.queryBuilder = (req, res, next) => {
   req.query = middleware.filterBuilder(req.query);
 
   // build the select fields for the request
-  // req.query = middleware.withBuilder(req.query, UserModel.refSchemas);
+  req.query = middleware.withBuilder(req.query);
 
   // build the filter fields for the request
   req.query = middleware.limitBuilder(req.query);

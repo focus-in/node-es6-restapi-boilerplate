@@ -1,7 +1,8 @@
 const HttpStatus = require('http-status');
 const passport = require('passport');
-
-const UserModel = require('../../user/models/user.model');
+require('module-alias/register');
+const { event } = require('@system'); // eslint-disable-line
+const { model: UserModel } = require('@modules/user'); // eslint-disable-line
 const AuthModel = require('../models/auth.model');
 const AuthHelper = require('../utils/auth.helper');
 
@@ -17,12 +18,14 @@ exports.signup = async (req, res, next) => {
     const User = new UserModel(req.body);
     const user = await User.save();
     // sent auth registration email
-    AuthHelper.activationEmail(user);
+    AuthHelper.activationMail(user);
     // sent otp to registered phone
     AuthHelper.activationPhone(user);
-    // TODO: events to register activities & notifications
+    // log the event in activity
+    event.emit('signup', user);
+    // TODO: events to notify admin
     // response
-    res.status(HttpStatus.CREATED).json(user.securedUser(UserModel.secureFields));
+    res.status(HttpStatus.CREATED).send(user.securedUser(UserModel.secureFields));
   } catch (error) {
     next(error);
   }
@@ -47,8 +50,10 @@ exports.signin = async (req, res, next) => {
       req.user = user.securedUser(UserModel.secureFields);
       // generate user auth tokens
       const token = AuthModel.generateTokens(req.user);
+      // log the event in activity
+      event.emit('signin', req.user);
       // return user auth reponse
-      return res.status(HttpStatus.OK).send({
+      return res.send({
         token,
         user: req.user,
       });
@@ -71,8 +76,10 @@ exports.oauth = async (req, res, next) => {
     req.user = req.user.securedUser(UserModel.secureFields);
     // generate user auth tokens
     const token = AuthModel.generateTokens(req.user);
+    // log the event in activity
+    event.emit('oauth', req.user);
     // return user auth reponse
-    return res.status(HttpStatus.OK).send({
+    return res.send({
       token,
       user: req.user,
     });
@@ -93,8 +100,12 @@ exports.activate = async (req, res, next) => {
     const user = await UserModel.activate(req.params);
     // remove all the secured fields
     user.securedUser(UserModel.secureFields);
-    // TODO: sent activated successfully email
-    res.status(HttpStatus.OK).send(user);
+    // sent activated successfully email
+    AuthHelper.activatedMail(user);
+    // log event in activity
+    event.emit('activate', user);
+    // send the response
+    res.send(user);
   } catch (error) {
     next(error);
   }
@@ -110,8 +121,15 @@ exports.activate = async (req, res, next) => {
 exports.reactivate = async (req, res, next) => {
   try {
     const user = await UserModel.reactivate(req.body);
-    // TODO: sent activation token mail
-    res.status(HttpStatus.CREATED).json(user.securedUser(UserModel.secureFields));
+    // remove the secured fields
+    user.securedUser(UserModel.secureFields);
+    // resent activation token in mail & phone
+    AuthHelper.activationMail(user);
+    AuthHelper.activationPhone(user);
+    // log the event in activity
+    event.emit('reactivity', user);
+    // success response
+    res.send(user);
   } catch (error) {
     next(error);
   }
@@ -119,7 +137,10 @@ exports.reactivate = async (req, res, next) => {
 
 /**
  * Returns a new jwt when given a valid refresh token
- * @public
+ *
+ * @param {object} req request object
+ * @param {object} res response object
+ * @param {Function} next next function handler
  */
 exports.refresh = async (req, res, next) => {
   try {
@@ -129,24 +150,37 @@ exports.refresh = async (req, res, next) => {
       refreshToken,
     });
     const user = await UserModel.findById(refreshObject._userId);
-    const response = this.tokenResponse(user);
-    return res.json(response);
+    // log event in activity
+    event.emit('refresh', user);
+    // generate user auth tokens
+    const response = AuthModel.generateTokens(req.user);
+    // return the token resposne
+    return res.send({
+      response,
+    });
   } catch (error) {
     return next(error);
   }
 };
 
 /**
- * Generate reset token and send reset link to users email
- * @public
+ * Generate reset token and send reset link to forgot users email
+ *
+ * @param {object} req request object
+ * @param {object} res response object
+ * @param {Function} next next function handler
  */
 exports.forgot = async (req, res, next) => {
   try {
-    const { email } = req.body;
-    const user = await UserModel.findAndReset(email);
-    // TODO: sent reset mail
-    this.resetMail(user);
-    return res.json({ message: 'Password reset link sent to registered email address' });
+    const user = await UserModel.forgot(req.body);
+    // sent forgot mail with reset token
+    AuthHelper.forgotMail(user);
+    // log event in activity
+    event.emit('forgot', user);
+    // return the success response
+    return res.send({
+      message: 'Password reset link sent to registered email address',
+    });
   } catch (error) {
     return next(error);
   }
@@ -154,13 +188,20 @@ exports.forgot = async (req, res, next) => {
 
 /**
  * Update user password with reset token
- * @public
+ *
+ * @param {object} req request object
+ * @param {object} res response object
+ * @param {Function} next next function handler
  */
 exports.reset = async (req, res, next) => {
   try {
-    const { resetToken, newPassword } = req.body;
-    await UserModel.findAndResetPassword(resetToken, newPassword);
-    return res.json({ message: 'Password updated successfully, please login with new password' });
+    const user = await UserModel.reset(req.body);
+    // log event in activity
+    event.emit('reset', user);
+    // return the success response
+    return res.send({
+      message: 'Password updated successfully, please login with new password',
+    });
   } catch (error) {
     return next(error);
   }

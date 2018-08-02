@@ -7,8 +7,8 @@ module.exports = {
       firstName: Joi.string().trim().required(),
       lastName: Joi.string().trim().required(),
       email: Joi.string().trim().email().required(),
-      password: Joi.string().trim().regex(/[a-zA-Z0-9]{3,30}/).required(),
-      phone: Joi.number().required(),
+      password: Joi.string().trim().regex(/[a-zA-Z0-9]{6,30}/).required(),
+      phone: Joi.number().integer().max(9999999999).required(),
     },
   },
 
@@ -16,7 +16,7 @@ module.exports = {
   signin: {
     body: {
       email: Joi.string().trim().email().required(),
-      password: Joi.string().trim().regex(/[a-zA-Z0-9]{3,30}/).required(),
+      password: Joi.string().trim().regex(/[a-zA-Z0-9]{6,30}/).required(),
     },
   },
 
@@ -51,11 +51,12 @@ module.exports = {
 
   // POST /auth/reset/:token
   reset: {
-    params: {
-      token: Joi.string().required(),
-    },
+    // params: {
+    //   token: Joi.string().required(),
+    // },
     body: {
-      password: Joi.string().required().min(6).max(128),
+      token: Joi.string().required(),
+      password: Joi.string().regex(/[a-zA-Z0-9]{6,30}/).required(),
     },
   },
 
