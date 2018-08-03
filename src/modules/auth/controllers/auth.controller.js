@@ -149,15 +149,16 @@ exports.refresh = async (req, res, next) => {
       token,
       refreshToken,
     });
+    if (!refreshObject) {
+      throw new Error('Invalid token');
+    }
     const user = await UserModel.findById(refreshObject._userId);
     // log event in activity
     event.emit('refresh', user);
     // generate user auth tokens
-    const response = AuthModel.generateTokens(req.user);
+    const response = AuthModel.generateTokens(user);
     // return the token resposne
-    return res.send({
-      response,
-    });
+    return res.send(response);
   } catch (error) {
     return next(error);
   }

@@ -18,6 +18,7 @@ AuthSchema.statics = {
 
     // save the generated token
     const tokenObject = new this({
+      _userId: user._id,
       token,
       refreshToken,
       expires: moment().add(auth.refreshTill, 'days').toDate(),
