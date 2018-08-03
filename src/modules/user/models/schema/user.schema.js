@@ -33,16 +33,6 @@ const UserSchema = new mongoose.Schema({
   salt: {
     type: String,
   },
-  _organisationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Organisation',
-  },
-  organisationEmail: {
-    type: String,
-    match: /^\S+@\S+\.\S+$/,
-    trim: true,
-    lowercase: true,
-  },
   phone: {
     type: Number,
     index: true,
@@ -79,19 +69,6 @@ const UserSchema = new mongoose.Schema({
     enum: userEnum.roles,
     default: 'user',
   },
-  _vehicles: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Vehicle',
-  }],
-  wallet: {
-    amount: {
-      type: Number,
-      default: 10,
-    },
-    lastUpdate: {
-      type: Date,
-    },
-  },
   services: [{
     provider: {
       type: String,
@@ -124,15 +101,6 @@ const UserSchema = new mongoose.Schema({
       type: Date,
     },
   },
-  _vouchers: [{
-    voucherId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Voucher',
-    },
-    credit: { type: Number },
-    usedAt: { type: Date },
-    status: { type: String },
-  }],
   activeFlag: {
     type: Boolean,
     default: false,
