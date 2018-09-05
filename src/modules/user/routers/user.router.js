@@ -1,10 +1,10 @@
-const validation = require('express-validation');
-const UserController = require('../controllers/user.controller');
-const UserValidator = require('../validators/user.validator');
+const controller = require('../controllers/user.controller');
+const validator = require('../validators/user.validator');
+const middleware = require('../middlewares/user.middleware');
 require('module-alias/register');
-const { isLoggedIn } = require('@system').authenticate; // eslint-disable-line
+const { isLoggedIn, isAdmin } = require('@system').authenticate; // eslint-disable-line
 
-module.exports = (router) => {
+module.exports = (router, validate) => {
   /**
    * Add isLoggedIn middleware for all the below requests
    */
@@ -18,6 +18,9 @@ module.exports = (router) => {
      * @apiVersion 0.0.1
      * @apiName ListUser
      * @apiGroup User
+     * @apiPermission admin
+     *
+     * @apiHeader {String} Authorization  Admin access auth token
      *
      * @apiParam  {String}          [select]      User select column names [email,phone,*]
      * @apiParam  {Object}          [filter]      User filter object [email,phone]
@@ -52,13 +55,16 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .get(validation(UserValidator.list), UserController.list)
+    .get(isAdmin(), validate(validator.list), middleware.queryBuilder, controller.list)
     /**
      * @api {post} /users Create user
      * @apiDescription Create new user only by admin
      * @apiVersion 0.0.1
      * @apiName CreateUser
      * @apiGroup User
+     * @apiPermission admin
+     *
+     * @apiHeader {String} Authorization  Admin access auth token
      *
      * @apiParam  {String}          firstName         User's first name
      * @apiParam  {String}          lastName          User's last name
@@ -103,7 +109,7 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .post(validation(UserValidator.create), UserController.create);
+    .post(isAdmin(), validate(validator.create), controller.create);
 
   router
     .route('/users/profile')
@@ -113,6 +119,9 @@ module.exports = (router) => {
      * @apiVersion 0.0.1
      * @apiName ListUser
      * @apiGroup User
+     * @apiPermission user
+     *
+     * @apiHeader {String} Authorization  Users access auth token
      *
      * @apiParam  {String}          [select]      User select column names [email,phone,*]
      * @apiParam  {Object}          [filter]      User filter object [email,phone]
@@ -147,7 +156,7 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .get(UserController.profile);
+    .get(middleware.queryBuilder, controller.profile);
 
   router
     .route('/users/:userId')
@@ -157,6 +166,9 @@ module.exports = (router) => {
      * @apiVersion 0.0.1
      * @apiName GetUser
      * @apiGroup User
+     * @apiPermission admin
+     *
+     * @apiHeader {String} Authorization  Admin access auth token
      *
      * @apiParam  {ID}    userId         User's _id
      *
@@ -185,13 +197,16 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .get(validation(UserValidator.get), UserController.get)
+    .get(isAdmin(), validate(validator.get), middleware.queryBuilder, controller.get)
     /**
      * @api {put} /users/:userId Update user
      * @apiDescription Update user details
      * @apiVersion 0.0.1
      * @apiName UpdateUser
      * @apiGroup User
+     * @apiPermission user
+     *
+     * @apiHeader {String} Authorization  Users access auth token
      *
      * @apiParam  {ID}              userId            User's _id
      * @apiParam  {String}          firstName         User's first name
@@ -237,13 +252,16 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .put(validation(UserValidator.update), UserController.update)
+    .put(validate(validator.update), controller.update)
     /**
      * @api {delete} /users/:userId Delete user
      * @apiDescription Delete user only by admin
      * @apiVersion 0.0.1
      * @apiName DeleteUser
      * @apiGroup User
+     * @apiPermission admin
+     *
+     * @apiHeader {String} Authorization  Admin access auth token
      *
      * @apiParam  {ID}    userId         User's _id
      *
@@ -253,12 +271,12 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .delete(validation(UserValidator.delete), UserController.delete);
+    .delete(isAdmin(), validate(validator.delete), controller.delete);
 
   /**
-   * Load tag when API with tagId route parameter is hit
+   * Load user when API with userId route parameter is hit
    */
-  router.param('userId', UserController.load);
+  router.param('userId', controller.load);
 
   return router;
 };

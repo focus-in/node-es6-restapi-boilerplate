@@ -12,6 +12,15 @@ const Activity = require('../models/activity.model');
 exports.load = async (req, res, next, id) => {
   try {
     const activity = await Activity.findById(id);
+    if (!activity || activity.deleted) {
+      throw new Error('Invalid id');
+    }
+    // if not admin can access only his activity
+    if (req.user.role !== 'admin' && req.user._id.toString() !== activity._userId.toString()) {
+      const err = new Error('Invalid access');
+      err.status = 403;
+      throw err;
+    }
     req.locals = { activity };
     return next();
   } catch (e) {
@@ -29,19 +38,26 @@ exports.load = async (req, res, next, id) => {
  */
 exports.list = async (req, res, next) => {
   try {
-    // regex activity name for suggestion
-    if (req.query.filter && req.query.filter.activity) {
-      req.query.filter.activity = {
-        $regex: new RegExp(`^${req.query.filter.activity}`, 'i'),
-      };
+    // for non admin filter only own address
+    if (req.user.role !== 'admin') {
+      req.query.filter._userId = req.user._id;
     }
+    // count the documents
     const count = await Activity.countDocuments(req.query.filter);
-    const activities = await Activity.find()
+    // find the documents with select & filter
+    const activities = await Activity.find(req.query.filter)
       .select(req.query.select)
       .skip(req.query.offset)
       .limit(req.query.limit)
       .sort(req.query.sortBy)
       .exec();
+
+    // populate ref schema fields
+    if (req.query.populates.length) {
+      await Promise.all(Object.values(req.query.populates)
+        .map(({ path, select }) => Activity.populate(activities, { path, select })));
+    }
+
     return res.json({
       count,
       activities,
@@ -59,50 +75,21 @@ exports.list = async (req, res, next) => {
  * @param {Function} next next handler function
  * @return {Object} Activity object
  */
-exports.get = (req, res, next) => {
+exports.get = async (req, res, next) => {
   try {
-    // populate the activity with other objects
-    // req.locals.activity.withPopulate(req.query.with);
+    const { activity } = req.locals;
+    // populate ref schema fields
+    if (req.query.populates.length) {
+      await Promise.all(Object.values(req.query.populates)
+        .map(({ path, select }) => Activity.populate(activity, { path, select })));
+    }
+    // check for deep populate
+    if (req.query.deepPopulates.length) {
+      await Promise.all(Object.values(req.query.deepPopulates)
+        .map(({ path, select, model }) => Activity.populate(activity, { path, select, model })));
+    }
     // return the activity data
-    return res.json(req.locals.activity);
-  } catch (e) {
-    return next(e);
-  }
-};
-
-/**
- * Create - save new activity
- *
- * @param {Object} req request object
- * @param {Object} res response object
- * @param {Function} next next handler function
- * @return {Object} created activity object
- */
-exports.create = async (req, res, next) => {
-  try {
-    // save the new activity
-    const activity = new Activity(req.body);
-    await activity.save();
-    return res.status(HttpStatus.CREATED).json(activity);
-  } catch (e) {
-    return next(e);
-  }
-};
-
-/**
- * Update - update activity details
- *
- * @param {Object} req request object
- * @param {Object} res response object
- * @param {Function} next next handler function
- * @return {Object} updated activity object
- */
-exports.update = async (req, res, next) => {
-  try {
-    const activity = Object.assign(req.locals.activity, req.body);
-    // save & return success response
-    await activity.save();
-    return res.status(HttpStatus.OK).send(activity);
+    return res.json(activity);
   } catch (e) {
     return next(e);
   }

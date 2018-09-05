@@ -1,4 +1,5 @@
 const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 const UserModel = require('../models/user.model');
 
 // const addressObj = Joi.object().keys({
@@ -11,7 +12,6 @@ const UserModel = require('../models/user.model');
 //   long: Joi.number().trim(),
 //   tag: Joi.string().trim(),
 // });
-
 
 module.exports = {
   list: {
@@ -31,7 +31,7 @@ module.exports = {
       authorization: Joi.string().required(),
     },
     params: {
-      userId: Joi.string().required(),
+      userId: Joi.objectId(),
     },
   },
   create: {
@@ -42,7 +42,7 @@ module.exports = {
       firstName: Joi.string().trim().required(),
       lastName: Joi.string().trim().required(),
       email: Joi.string().trim().email().required(),
-      password: Joi.string().trim().regex(/[a-zA-Z0-9]{3,30}/).required(),
+      password: Joi.string().trim().regex(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{6,})/).required(),
       phone: Joi.number().required(),
       // address: addressObj,
       gender: Joi.string().valid(UserModel.enum.gender),
@@ -56,14 +56,14 @@ module.exports = {
       authorization: Joi.string().required(),
     },
     params: {
-      userId: Joi.string().required(),
+      userId: Joi.objectId(),
     },
     body: {
-      firstName: Joi.string().trim().required(),
-      lastName: Joi.string().trim().required(),
-      email: Joi.string().trim().email().required(),
-      password: Joi.string().trim().regex(/[a-zA-Z0-9]{3,30}/).required(),
-      phone: Joi.number().required(),
+      firstName: Joi.string().trim().optional(),
+      lastName: Joi.string().trim().optional(),
+      email: Joi.string().trim().optional().email(),
+      password: Joi.string().trim().optional().regex(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{6,})/),
+      phone: Joi.number().optional(),
       // address: addressObj,
       gender: Joi.string().valid(UserModel.enum.gender),
       birthDate: Joi.date(),
@@ -76,7 +76,7 @@ module.exports = {
       authorization: Joi.string().required(),
     },
     params: {
-      userId: Joi.string().required(),
+      userId: Joi.objectId(),
     },
   },
 };

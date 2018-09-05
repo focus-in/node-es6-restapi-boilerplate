@@ -24,6 +24,7 @@ const mongoUri = `${process.env.MONGO_URI}/${mongoName}`;
 module.exports = {
   env: process.env.NODE_ENV,
   port: process.env.PORT,
+  commander: false, // terminal runner
   app: {
     url: appUrl,
   },
@@ -62,6 +63,12 @@ module.exports = {
       callbackURL: 'http://127.0.0.1:3000/api/v1/auth/twitter/callback',
       userProfileURL: 'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true',
       passReqToCallback: true,
+    },
+    linkedin: {
+      consumerKey: process.env.AUTH_LINKEDIN_KEY,
+      consumerSecret: process.env.AUTH_LINKEDIN_SECRET,
+      callbackURL: `${appUrl}/api/v1/auth/linkedin/callback`,
+      profileFields: ['id', 'first-name', 'last-name', 'email-address', 'headline'],
     },
   },
   log: {

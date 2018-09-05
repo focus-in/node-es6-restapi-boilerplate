@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const mongooseDelete = require('mongoose-delete');
+const mongooseIdValidator = require('mongoose-id-validator');
 const userEnum = require('../../utils/user.enum');
 
 /**
@@ -37,6 +38,7 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     index: true,
     unique: true,
+    sparse: true,
     min: 1000000000,
     minlength: 9999999999,
   },
@@ -55,10 +57,10 @@ const UserSchema = new mongoose.Schema({
   },
   photos: [{
     value: { type: String },
+    isDefault: { type: Boolean, default: true },
   }],
   image: {
     url: { type: String },
-    isDefault: { type: Boolean, default: true },
   },
   bio: {
     type: String,
@@ -101,6 +103,10 @@ const UserSchema = new mongoose.Schema({
       type: Date,
     },
   },
+  emergencyContacts: [{
+    name: { type: String },
+    phone: { type: Number },
+  }],
   activeFlag: {
     type: Boolean,
     default: false,
@@ -124,6 +130,10 @@ UserSchema.index({ verifiedFlag: 1, email: 1, createdAt: -1 });
  * Add mongoose soft delete plugin with deleted user & time stamp
  */
 UserSchema.plugin(mongooseDelete, { deletedBy: true, deletedAt: true });
+/**
+ * Ref schema id validator
+ */
+UserSchema.plugin(mongooseIdValidator);
 
 /**
  * export the schema

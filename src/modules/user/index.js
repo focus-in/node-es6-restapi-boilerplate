@@ -1,7 +1,5 @@
 const UserModel = require('./models/user.model');
-const UserMiddleware = require('./middlewares/user.middleware');
 const UserController = require('./controllers/user.controller');
-const UserRouter = require('./routers/user.router');
 const UserEnum = require('./utils/user.enum');
 
 /**
@@ -19,19 +17,9 @@ module.exports = {
   model: UserModel,
 
   /**
-   * Load the user middleware
-   */
-  middleware: UserMiddleware,
-
-  /**
    * Load the user controller
    */
   controller: UserController,
-
-  /**
-   * Load the user router
-   */
-  router: UserRouter,
 
   /**
    * Load other utils classes

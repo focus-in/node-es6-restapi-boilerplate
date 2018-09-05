@@ -14,9 +14,9 @@ mongoose.connection.on('error', (err) => {
  * Mongoose Connection Handler
  * @param {Object} env environment variables
  */
-module.exports.connect = ({ env, db }) => {
+module.exports.connect = ({ env, commander, db }) => {
   // print mongoose logs only in dev env
-  if (env === 'development') {
+  if (env === 'development' && !commander) {
     mongoose.set('debug', true);
   }
 
@@ -35,7 +35,7 @@ module.exports.connect = ({ env, db }) => {
  * Mongoose Disconnect Handler
  */
 module.exports.disconnect = () => {
-  mongoose.connection.db
+  mongoose.connection
     .close((err) => {
       logger.info('Disconnected from MongoDB.');
       return err;

@@ -9,7 +9,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const passport = require('passport');
 const queryType = require('query-types');
-// const validation = require('express-validation');
+const validation = require('express-validation');
 const auth = require('./auth');
 const logger = require('./logger');
 const error = require('./error');
@@ -48,8 +48,8 @@ module.exports.initMiddlewares = (app, config) => {
   }
 
   // parse body params and attache them to req.body
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(bodyParser.json()); // parse application/json
+  app.use(bodyParser.urlencoded({ extended: true })); // parse application/x-www-form-urlencoded
 
   // gzip compression
   app.use(compress());
@@ -122,7 +122,7 @@ module.exports.initRouters = (app) => {
   const router = express.Router();
 
   // init all the system module routers
-  const v1Routers = SystemConfig.initV1Routers(router);
+  const v1Routers = SystemConfig.initV1Routers(router, validation);
 
   // mount api v1 routes
   app.use('/api/v1', v1Routers);
@@ -141,7 +141,7 @@ module.exports.initRouters = (app) => {
 
   // 404 error route
   app.use('*', (req, res) => {
-    res.status(404).send({ name: 'Error', message: 'LOL! you got a wrong url' });
+    res.status(404).send({ name: 'Error', errors: [], message: 'LOL! you got a wrong url' });
   });
 };
 

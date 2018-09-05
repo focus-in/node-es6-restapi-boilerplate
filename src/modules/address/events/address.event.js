@@ -5,7 +5,7 @@ module.exports = (event) => {
       activity: 'create',
       action: {
         id: address._id,
-        module: 'address',
+        module: 'Address',
       },
       message: 'User created new address',
     });
@@ -17,7 +17,7 @@ module.exports = (event) => {
       activity: 'update',
       action: {
         id: address._id,
-        module: 'address',
+        module: 'Address',
       },
       message: 'User updated address',
     });
@@ -29,7 +29,7 @@ module.exports = (event) => {
       activity: 'delete',
       action: {
         id: address._id,
-        module: 'address',
+        module: 'Address',
       },
       message: 'User deleted address',
     });

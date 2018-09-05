@@ -1,10 +1,10 @@
-const validation = require('express-validation');
-const ActivityController = require('../controllers/activity.controller');
-const ActivityValidator = require('../validators/activity.validator');
+const controller = require('../controllers/activity.controller');
+const validator = require('../validators/activity.validator');
+const middleware = require('../middlewares/activity.middleware');
 require('module-alias/register');
-const { isLoggedIn } = require('@system').authenticate; // eslint-disable-line
+const { isLoggedIn, isAdmin } = require('@system').authenticate; // eslint-disable-line
 
-module.exports = (router) => {
+module.exports = (router, validate) => {
   /**
    * Add isLoggedIn middleware for all the activities requests
    */
@@ -13,11 +13,14 @@ module.exports = (router) => {
   router
     .route('/activities')
     /**
-     * @api {get} /activity List all Activity
+     * @api {get} /activities List all Activity
      * @apiDescription List all activity
      * @apiVersion 0.0.1
      * @apiName ListActivity
      * @apiGroup Activity
+     * @apiPermission user
+     *
+     * @apiHeader {String} Authorization  Users access auth token
      *
      * @apiParam  {String}          [select]      Activity select column names [city,state,*]
      * @apiParam  {Object}          [filter]      Activity filter object [city,state]
@@ -44,50 +47,19 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .get(validation(ActivityValidator.list), ActivityController.list)
-    /**
-     * @api {post} /activity Save new Activity
-     * @apiDescription Create new activity
-     * @apiVersion 0.0.1
-     * @apiName CreateActivity
-     * @apiGroup Activity
-     *
-     * @apiParam  {String}          street      Activity street
-     * @apiParam  {String}          area        Activity area
-     * @apiParam  {String}          city        Activity city
-     * @apiParam  {String}          state       Activity state
-     * @apiParam  {String}          landmark    Activity landmark
-     * @apiParam  {Number{0-9}}     pincode     Activity pincode
-     * @apiParam  {Number{0-9}}     lat         Activity lat
-     * @apiParam  {Number{0-9}}     long        Activity long
-     * @apiParam  {String}          tag         Activity tag
-     *
-     * @apiSuccess (Created 201) {ID}             _id         Activity id
-     * @apiSuccess (Created 201) {String}         street      Activity street
-     * @apiSuccess (Created 201) {String}         area        Activity area
-     * @apiSuccess (Created 201) {String}         city        Activity city
-     * @apiSuccess (Created 201) {String}         state       Activity state
-     * @apiSuccess (Created 201) {String}         landmark    Activity landmark
-     * @apiSuccess (Created 201) {Number{0-9}}    pincode     Activity pincode
-     * @apiSuccess (Created 201) {Number{0-9}}    lat         Activity lat
-     * @apiSuccess (Created 201) {Number{0-9}}    long        Activity long
-     * @apiSuccess (Created 201) {String}         tag         Activity tag
-     * @apiSuccess (Created 201) {Date}           createdAt   Activity created timestamp
-     *
-     * @apiError (Bad Request 400)   Bad Request   Invalid request data
-     * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
-     * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
-     */
-    .post(validation(ActivityValidator.create), ActivityController.create);
+    .get(validate(validator.list), middleware.queryBuilder, controller.list);
 
   router
     .route('/activities/:activityId')
     /**
-     * @api {get} /activity/:activityId Get activity
+     * @api {get} /activities/:activityId Get activity
      * @apiDescription Get activity details by activityId
      * @apiVersion 0.0.1
      * @apiName GetActivity
      * @apiGroup Activity
+     * @apiPermission user
+     *
+     * @apiHeader {String} Authorization  Users access auth token
      *
      * @apiParam  {ID}    activityId       Activity _id
      *
@@ -107,48 +79,16 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .get(validation(ActivityValidator.get), ActivityController.get)
+    .get(validate(validator.get), middleware.queryBuilder, controller.get)
     /**
-     * @api {put} /activity/:activityId Update activity details
-     * @apiDescription Update activity
+     * @api {delete} /activities/:activityId Delete activity details
+     * @apiDescription Delete activity
      * @apiVersion 0.0.1
-     * @apiName UpdateActivity
+     * @apiName DeleteActivity
      * @apiGroup Activity
+     * @apiPermission user
      *
-     * @apiParam  {ID}            activityId   Activity _id
-     * @apiParam  {String}        street      Activity street
-     * @apiParam  {String}        area        Activity area
-     * @apiParam  {String}        city        Activity city
-     * @apiParam  {String}        state       Activity state
-     * @apiParam  {String}        landmark    Activity landmark
-     * @apiParam  {Number{0-9}}   pincode     Activity pincode
-     * @apiParam  {Number{0-9}}   lat         Activity lat
-     * @apiParam  {Number{0-9}}   long        Activity long
-     * @apiParam  {String}        tag         Activity tag
-     *
-     * @apiSuccess (Ok 200) {ID}             _id         Activity id
-     * @apiSuccess (Ok 200) {String}         street      Activity street
-     * @apiSuccess (Ok 200) {String}         area        Activity area
-     * @apiSuccess (Ok 200) {String}         city        Activity city
-     * @apiSuccess (Ok 200) {String}         state       Activity state
-     * @apiSuccess (Ok 200) {String}         landmark    Activity landmark
-     * @apiSuccess (Ok 200) {Number{0-9}}    pincode     Activity pincode
-     * @apiSuccess (Ok 200) {Number{0-9}}    lat         Activity lat
-     * @apiSuccess (Ok 200) {Number{0-9}}    long        Activity long
-     * @apiSuccess (Ok 200) {String}         tag         Activity tag
-     * @apiSuccess (Ok 200) {Date}           createdAt   Activity created timestamp
-     *
-     * @apiError (Bad Request 400)   Bad Request   Invalid request data
-     * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
-     * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
-     */
-    .put(validation(ActivityValidator.update), ActivityController.update)
-    /**
-     * @api {put} /activity/:activityId Update activity details
-     * @apiDescription Update activity
-     * @apiVersion 0.0.1
-     * @apiName UpdateActivity
-     * @apiGroup Activity
+     * @apiHeader {String} Authorization  Users access auth token
      *
      * @apiParam  {ID}    activityId       Activity _id
      *
@@ -158,12 +98,12 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .delete(validation(ActivityValidator.delete), ActivityController.delete);
+    .delete(isAdmin(), validate(validator.delete), controller.delete);
 
   /**
    * Load activity on :activityId route
    */
-  router.param('activityId', ActivityController.load);
+  router.param('activityId', controller.load);
 
   return router;
 };

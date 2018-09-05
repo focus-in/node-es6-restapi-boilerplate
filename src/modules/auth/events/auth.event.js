@@ -5,7 +5,7 @@ module.exports = (event) => {
       activity: 'signup',
       action: {
         id: user._id,
-        module: 'auth',
+        module: 'Auth',
       },
       message: 'User signup',
     });
@@ -17,7 +17,7 @@ module.exports = (event) => {
       activity: 'signin',
       action: {
         id: user._id,
-        module: 'auth',
+        module: 'Auth',
       },
       message: 'User signin',
     });
@@ -29,7 +29,7 @@ module.exports = (event) => {
       activity: 'oauth',
       action: {
         id: user._id,
-        module: 'auth',
+        module: 'Auth',
       },
       message: 'User oauth login',
     });
@@ -41,7 +41,7 @@ module.exports = (event) => {
       activity: 'activate',
       action: {
         id: user._id,
-        module: 'auth',
+        module: 'Auth',
       },
       message: 'User activated successfully',
     });
@@ -53,7 +53,7 @@ module.exports = (event) => {
       activity: 'reactivate',
       action: {
         id: user._id,
-        module: 'auth',
+        module: 'Auth',
       },
       message: 'User sent reactivate mail',
     });
@@ -65,7 +65,7 @@ module.exports = (event) => {
       activity: 'refresh',
       action: {
         id: user._id,
-        module: 'auth',
+        module: 'Auth',
       },
       message: 'User auth token refresh',
     });
@@ -77,7 +77,7 @@ module.exports = (event) => {
       activity: 'forgot',
       action: {
         id: user._id,
-        module: 'auth',
+        module: 'Auth',
       },
       message: 'User forgot mail, with reset password sent',
     });
@@ -89,7 +89,7 @@ module.exports = (event) => {
       activity: 'reset',
       action: {
         id: user._id,
-        module: 'auth',
+        module: 'Auth',
       },
       message: 'User reset password successfully',
     });

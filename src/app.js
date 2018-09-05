@@ -38,3 +38,21 @@ module.exports.start = async () => {
     return process.exit(1);
   }
 };
+
+/**
+ * Stop the application with express & mongoose
+ */
+module.exports.stop = (server) => {
+  try {
+    // stop the express server instance
+    server.close();
+    // disconnect mongodb with mongoose
+    mongoose.disconnect();
+    // return
+    return true;
+  } catch (error) {
+    // log the error & exit the process on any errors
+    logger.error(error);
+    return process.exit(1);
+  }
+};

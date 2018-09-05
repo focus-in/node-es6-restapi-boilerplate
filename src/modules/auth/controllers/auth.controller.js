@@ -42,7 +42,7 @@ exports.signin = async (req, res, next) => {
   try {
     passport.authenticate('local', (err, user, info) => {
       if (err || !user) {
-        err.status = HttpStatus.UNAUTHORIZED;
+        err.status = err.status || HttpStatus.BAD_REQUEST;
         err.info = info;
         return next(err);
       }

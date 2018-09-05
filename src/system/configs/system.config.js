@@ -16,6 +16,17 @@ exports.initModels = () => {
 };
 
 /**
+ * Load all the modules script files
+ */
+exports.initScripts = (program) => {
+  // Get all modules scripts files
+  const scriptFiles = glob.sync(`${process.cwd()}/${assets.scripts}`);
+  // Load all script files
+  // eslint-disable-next-line
+  scriptFiles.map((scripts) => require(scripts)(program));
+};
+
+/**
  * Init passport authentication middlewares
  *
  * @param {Object} passport passport object
@@ -44,14 +55,14 @@ exports.initEvents = () => {
 /**
  * Init all module routers
  *
- * @param {Object} app express app Object
  * @param {Object} router express router object
+ * @param {Object} validate express validate Object
  */
-exports.initV1Routers = (router) => {
+exports.initV1Routers = (router, validate) => {
   // module routers
   const moduleRouters = glob.sync(`${process.cwd()}/${assets.routers}`);
   // eslint-disable-next-line
-  moduleRouters.map((moduleRoute) => require(moduleRoute)(router));
+  moduleRouters.map((moduleRoute) => require(moduleRoute)(router, validate));
   // return the router with all module routes
   return router;
 };

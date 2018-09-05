@@ -6,4 +6,6 @@ const program = require('commander');
 program
   .version('0.0.1')
   .description('GoPool Command line interface')
-  .usage('[Command] [args] [Options]');
+  .usage('[command]');
+
+module.exports = program;
