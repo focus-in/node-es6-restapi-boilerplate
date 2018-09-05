@@ -30,18 +30,15 @@ module.exports = (router, validate) => {
      * @apiParam  {String}          [order]       Activity list order by [createdAt, city]
      * @apiParam  {String=asc,desc} [sort]        Activity order sort by [asc, desc]
      *
-     * @apiSuccess (Ok 200) {Number}         count               Activity list total count
-     * @apiSuccess (Ok 200) {ID}             activity._id         Activity id
-     * @apiSuccess (Ok 200) {String}         activity.street      Activity street
-     * @apiSuccess (Ok 200) {String}         activity.area        Activity area
-     * @apiSuccess (Ok 200) {String}         activity.city        Activity city
-     * @apiSuccess (Ok 200) {String}         activity.state       Activity state
-     * @apiSuccess (Ok 200) {String}         activity.landmark    Activity landmark
-     * @apiSuccess (Ok 200) {Number{0-9}}    activity.pincode     Activity pincode
-     * @apiSuccess (Ok 200) {Number{0-9}}    activity.lat         Activity lat
-     * @apiSuccess (Ok 200) {Number{0-9}}    activity.long        Activity long
-     * @apiSuccess (Ok 200) {String}         activity.tag         Activity tag
-     * @apiSuccess (Ok 200) {Date}           activity.createdAt   Activity created timestamp
+     * @apiSuccess (Ok 200) {Number}     count                  Activity list total count
+     * @apiSuccess (Ok 200) {ID}         activity._id           Activity id
+     * @apiSuccess (Ok 200) {ID}         activity._userId       Activity user id
+     * @apiSuccess (Ok 200) {Object}     activity.action        Activity action object
+     * @apiSuccess (Ok 200) {String}     activity.action.id     Activity action module id
+     * @apiSuccess (Ok 200) {String}     activity.action.module Activity action module name
+     * @apiSuccess (Ok 200) {Object}     activity.action.data   Activity action module data
+     * @apiSuccess (Ok 200) {String}     activity.message       Activity message
+     * @apiSuccess (Ok 200) {Date}       activity.createdAt     Activity created timestamp
      *
      * @apiError (Bad Request 400)   Bad Request   Invalid request data
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
@@ -63,17 +60,14 @@ module.exports = (router, validate) => {
      *
      * @apiParam  {ID}    activityId       Activity _id
      *
-     * @apiSuccess (Ok 200) {ID}             _id         Activity id
-     * @apiSuccess (Ok 200) {String}         street      Activity street
-     * @apiSuccess (Ok 200) {String}         area        Activity area
-     * @apiSuccess (Ok 200) {String}         city        Activity city
-     * @apiSuccess (Ok 200) {String}         state       Activity state
-     * @apiSuccess (Ok 200) {String}         landmark    Activity landmark
-     * @apiSuccess (Ok 200) {Number{0-9}}    pincode     Activity pincode
-     * @apiSuccess (Ok 200) {Number{0-9}}    lat         Activity lat
-     * @apiSuccess (Ok 200) {Number{0-9}}    long        Activity long
-     * @apiSuccess (Ok 200) {String}         tag         Activity tag
-     * @apiSuccess (Ok 200) {Date}           createdAt   Activity created timestamp
+     * @apiSuccess (Ok 200) {ID}         _id           Activity id
+     * @apiSuccess (Ok 200) {ID}         _userId       Activity user id
+     * @apiSuccess (Ok 200) {Object}     action        Activity action object
+     * @apiSuccess (Ok 200) {String}     action.id     Activity action module id
+     * @apiSuccess (Ok 200) {String}     action.module Activity action module name
+     * @apiSuccess (Ok 200) {Object}     action.data   Activity action module data
+     * @apiSuccess (Ok 200) {String}     message       Activity message
+     * @apiSuccess (Ok 200) {Date}       createdAt     Activity created timestamp
      *
      * @apiError (Bad Request 400)   Bad Request   Invalid request data
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
