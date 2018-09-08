@@ -17,9 +17,4 @@ ActivitySchema.statics = {
 
 };
 
-/**
- * Use methods with user object
- */
-ActivitySchema.method({});
-
 module.exports = mongoose.model('Activity', ActivitySchema);

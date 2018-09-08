@@ -7,13 +7,13 @@ const logger = require('@configs/libs/logger'); // eslint-disable-line
 /**
  * Set userID & find new schema
  */
-AddressSchema.pre('save', function save(next, opts) {
+AddressSchema.pre('save', function save(next, userId) {
   // NOTE: isNew field internally used my mongoose to set it to false in post save
   // NOTE: for our reference use custom wasNew field
   this.wasNew = this.isNew;
-  if (opts._userId) {
+  if (userId) {
     // save the userId
-    this._userId = opts._userId;
+    this._userId = userId;
   }
   // return to next action
   return next();
@@ -25,14 +25,17 @@ AddressSchema.pre('save', function save(next, opts) {
 AddressSchema.post('save', async (address, next) => {
   // check is this a new object
   if (address.wasNew) {
-    // populate user object to update new address id
-    address.populate('_userId').execPopulate()
-      .then((popAddress) => {
-        popAddress._userId._address.push(address._id);
-        popAddress._userId.save();
-      }, (err) => {
-        logger.error(err);
-      });
+    if (address._userId) {
+      // populate user object to update new address id
+      address.populate('_userId').execPopulate()
+        .then(async (popAddress) => {
+          const user = popAddress._userId;
+          user._address.push(address._id);
+          await user.save();
+        }, (err) => {
+          logger.error(err);
+        });
+    }
   }
   return next();
 });
@@ -41,15 +44,19 @@ AddressSchema.post('save', async (address, next) => {
  * Hook a post delete method to remove user address id
  */
 AddressSchema.post('delete', async (address, next) => {
-  // populate user object to remove deleted address id
-  address.populate('_userId').execPopulate()
-    .then((popAddress) => {
-      const index = popAddress._userId._address.indexOf(address._id);
-      popAddress._userId._address.splice(index, 1);
-      popAddress._userId.save();
-    }, (err) => {
-      logger.error(err);
-    });
+  // check the address for user
+  if (address._userId) {
+    // populate user object to remove deleted address id
+    address.populate('_userId').execPopulate()
+      .then(async (popAddress) => {
+        const user = popAddress._userId;
+        const index = user._address.indexOf(address._id);
+        user._address.splice(index, 1);
+        await user.save();
+      }, (err) => {
+        logger.error(err);
+      });
+  }
   return next();
 });
 
@@ -68,7 +75,7 @@ AddressSchema.statics = {
 };
 
 /**
- * Use methods with user object
+ * Use methods with address object
  */
 AddressSchema.method({});
 

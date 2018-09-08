@@ -1,11 +1,10 @@
-const validation = require('express-validation');
-const AddressController = require('../controllers/address.controller');
-const AddressValidator = require('../validators/address.validator');
-const AddressMiddleware = require('../middlewares/address.middleware');
+const controller = require('../controllers/address.controller');
+const validator = require('../validators/address.validator');
+const middleware = require('../middlewares/address.middleware');
 require('module-alias/register');
 const { isLoggedIn } = require('@system').authenticate; // eslint-disable-line
 
-module.exports = (router) => {
+module.exports = (router, validate) => {
   /**
    * Add isLoggedIn middleware for all the address requests
    */
@@ -19,6 +18,9 @@ module.exports = (router) => {
      * @apiVersion 0.0.1
      * @apiName ListAddress
      * @apiGroup Address
+     * @apiPermission user
+     *
+     * @apiHeader {String} Authorization  Users access auth token
      *
      * @apiParam  {String}          [select]      Address select column names [city,state,*]
      * @apiParam  {Object}          [filter]      Address filter object [city,state]
@@ -45,13 +47,16 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .get(validation(AddressValidator.list), AddressMiddleware.queryBuilder, AddressController.list)
+    .get(validate(validator.list), middleware.queryBuilder, controller.list)
     /**
      * @api {post} /address Save new Address
      * @apiDescription Create new address
      * @apiVersion 0.0.1
      * @apiName CreateAddress
      * @apiGroup Address
+     * @apiPermission user
+     *
+     * @apiHeader {String} Authorization  Users access auth token
      *
      * @apiParam  {String}          street      Address street
      * @apiParam  {String}          area        Address area
@@ -79,7 +84,7 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .post(validation(AddressValidator.create), AddressController.create);
+    .post(validate(validator.create), controller.create);
 
   router
     .route('/address/:addressId')
@@ -89,6 +94,9 @@ module.exports = (router) => {
      * @apiVersion 0.0.1
      * @apiName GetAddress
      * @apiGroup Address
+     * @apiPermission user
+     *
+     * @apiHeader {String} Authorization  Users access auth token
      *
      * @apiParam  {ID}    addressId       Address _id
      *
@@ -108,13 +116,16 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .get(validation(AddressValidator.get), AddressMiddleware.queryBuilder, AddressController.get)
+    .get(validate(validator.get), middleware.queryBuilder, controller.get)
     /**
      * @api {put} /address/:addressId Update address details
      * @apiDescription Update address
      * @apiVersion 0.0.1
      * @apiName UpdateAddress
      * @apiGroup Address
+     * @apiPermission user
+     *
+     * @apiHeader {String} Authorization  Users access auth token
      *
      * @apiParam  {ID}            addressId   Address _id
      * @apiParam  {String}        street      Address street
@@ -143,13 +154,16 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .put(validation(AddressValidator.update), AddressController.update)
+    .put(validate(validator.update), controller.update)
     /**
-     * @api {put} /address/:addressId Update address details
-     * @apiDescription Update address
+     * @api {delete} /address/:addressId Delete address details
+     * @apiDescription Delete address
      * @apiVersion 0.0.1
-     * @apiName UpdateAddress
+     * @apiName DeleteAddress
      * @apiGroup Address
+     * @apiPermission user
+     *
+     * @apiHeader {String} Authorization  Users access auth token
      *
      * @apiParam  {ID}    addressId       Address _id
      *
@@ -159,12 +173,12 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .delete(validation(AddressValidator.delete), AddressController.delete);
+    .delete(validate(validator.delete), controller.delete);
 
   /**
    * Load address on :addressId route
    */
-  router.param('addressId', AddressController.load);
+  router.param('addressId', controller.load);
 
   return router;
 };

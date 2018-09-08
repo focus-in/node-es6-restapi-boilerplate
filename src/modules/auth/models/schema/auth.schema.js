@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongooseIdValidator = require('mongoose-id-validator');
 
 /**
  * User Schema
@@ -35,6 +36,10 @@ const AuthSchema = new mongoose.Schema({
 
 AuthSchema.index({ _userId: 1, refreshToken: 1 });
 AuthSchema.index({ token: 1, refreshToken: 1 });
+/**
+ * Ref schema id validator
+ */
+AuthSchema.plugin(mongooseIdValidator);
 
 /**
  * export the schema

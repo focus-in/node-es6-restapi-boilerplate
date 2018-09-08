@@ -1,5 +1,8 @@
 const HttpStatus = require('http-status');
 const User = require('../models/user.model');
+const UserHelper = require('../utils/user.helper');
+require('module-alias/register');
+const { event } = require('@system'); // eslint-disable-line
 
 /**
  * Load user and append to req.
@@ -12,6 +15,9 @@ const User = require('../models/user.model');
 exports.load = async (req, res, next, id) => {
   try {
     const user = await User.findById(id);
+    if (!user || user.deleted) {
+      throw new Error('Invalid user');
+    }
     req.locals = { user };
     return next();
   } catch (e) {
@@ -46,7 +52,7 @@ exports.list = async (req, res, next) => {
       .exec();
 
       // populate ref schema fields
-    if (req.query.populates.length) {
+    if (req.query.populates.length && users.length) {
       await Promise.all(Object.values(req.query.populates)
         .map(({ path, select }) => User.populate(users, { path, select })));
     }
@@ -68,10 +74,18 @@ exports.list = async (req, res, next) => {
  * @param {Function} next next handler function
  * @return {Object} User object
  */
-exports.profile = (req, res, next) => {
+exports.profile = async (req, res, next) => {
   try {
-    // populate the user with other objects
-    // req.locals.user.withPopulate(req.query.with);
+    // populate ref schema fields
+    if (req.query.populates.length) {
+      await Promise.all(Object.values(req.query.populates)
+        .map(({ path, select }) => User.populate(req.user, { path, select })));
+    }
+    // check for deep populate
+    if (req.query.deepPopulates.length) {
+      await Promise.all(Object.values(req.query.deepPopulates)
+        .map(({ path, select, model }) => User.populate(req.user, { path, select, model })));
+    }
     // remove all the secured fields from user object
     req.user.securedUser(User.secureFields);
     // return the user data
@@ -89,14 +103,23 @@ exports.profile = (req, res, next) => {
  * @param {Function} next next handler function
  * @return {Object} User object
  */
-exports.get = (req, res, next) => {
+exports.get = async (req, res, next) => {
   try {
-    // populate the user with other objects
-    // req.locals.user.withPopulate(req.query.with);
+    const { user } = req.locals;
+    // populate ref schema fields
+    if (req.query.populates.length) {
+      await Promise.all(Object.values(req.query.populates)
+        .map(({ path, select }) => User.populate(user, { path, select })));
+    }
+    // check for deep populate
+    if (req.query.deepPopulates.length) {
+      await Promise.all(Object.values(req.query.deepPopulates)
+        .map(({ path, select, model }) => User.populate(user, { path, select, model })));
+    }
     // remove all the secured fields from user object
-    req.locals.user.securedUser(User.secureFields);
+    user.securedUser(User.secureFields);
     // return the user data
-    return res.json(req.locals.user);
+    return res.send(user);
   } catch (e) {
     return next(e);
   }
@@ -114,6 +137,8 @@ exports.create = async (req, res, next) => {
   try {
     const user = new User(req.body);
     await user.save();
+    // log the event in activity
+    event.emit('user-create', user);
     // remove the user secured fields
     user.securedUser(User.secureFields);
     // set the status & return the user object
@@ -133,9 +158,21 @@ exports.create = async (req, res, next) => {
  */
 exports.update = async (req, res, next) => {
   try {
+    // Verify only admin or same user can update
+    UserHelper.verifyValidAccess(req);
+    // set user role & verified flag
+    if (req.user.role !== 'admin') {
+      req.body.role = 'user';
+      delete req.body.verifiedFlag;
+    }
+    // service
+    delete req.body.services;
+    // merge both the existing and updated user objects
     const user = Object.assign(req.locals.user, req.body);
     // save & return success response
     await user.save();
+    // log the event in activity
+    event.emit('user-update', user);
     // remove the user secured fields
     user.securedUser(User.secureFields);
     // set the status & return the user object
@@ -158,6 +195,8 @@ exports.delete = async (req, res, next) => {
     const { user } = req.locals;
     // soft delete user
     await user.delete(req.user._id);
+    // log the event in activity
+    event.emit('user-delete', user);
     return res.status(HttpStatus.NO_CONTENT).end();
   } catch (e) {
     return next(e);

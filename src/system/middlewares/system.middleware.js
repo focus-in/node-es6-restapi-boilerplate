@@ -45,9 +45,27 @@ exports.filterBuilder = (query) => {
 exports.withBuilder = (query) => {
   // define the populates array in with fields
   query.populates = [];
-  Object.keys(query.with || {}).forEach(async (path) => {
+
+  Object.keys(query.with || {}).forEach((path) => {
     const select = query.with[path].split(',').join(' ');
     query.populates.push({ path, select });
+  });
+  return query;
+};
+
+/**
+ * With ref schema deep populate fields for list request
+ *
+ * @param {object} query request query object for select fields
+ * @return {object} query with filter fields object
+ */
+exports.deepBuilder = (query) => {
+  // define the populates array in deep fields
+  query.deepPopulates = [];
+  Object.keys(query.deep || {}).forEach((path) => {
+    const model = Object.keys(query.deep[path]).shift();
+    const select = query.deep[path][model].split(',').join(' ');
+    query.deepPopulates.push({ path, select, model });
   });
   return query;
 };

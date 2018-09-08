@@ -1,21 +1,41 @@
 #!/usr/bin/env node
 /* eslint no-console: 0 */
-
-const program = require('commander');
 const { prompt } = require('inquirer');
-
 const UserEnum = require('../utils/user.enum');
-const UserModel = require('../models/user.model');
+const User = require('../models/user.model');
 
-// const {
-//   addContact,
-//   getContact,
-//   getContactList,
-//   updateContact,
-//   deleteContact
-// } = require('./logic');
+module.exports = (program) => {
+  program
+    .command('user <action> [id]')
+    .description('run remote setup commands')
+    .action(async (action, id) => {
+      try {
+        switch (action) {
+          case 'create':
+            await createUser();
+            break;
 
-const questions = [
+          case 'find':
+            await findUser(id);
+            break;
+
+          default:
+            break;
+        }
+      } catch (e) {
+        console.log(e.message);
+        process.exit(1);
+      }
+    })
+    .on('--help', () => {
+      console.log('  User  ');
+      console.log('    $ user create    - Create new user object');
+      console.log('    $ user find [id] - Find user by id');
+      console.log();
+    });
+};
+
+const createPrompts = [
   {
     type: 'input',
     name: 'firstName',
@@ -37,6 +57,11 @@ const questions = [
     message: 'Enter password: ',
   },
   {
+    type: 'input',
+    name: 'phone',
+    message: 'Enter phone number: ',
+  },
+  {
     type: 'list',
     name: 'role',
     message: 'Select role: ',
@@ -55,40 +80,20 @@ const questions = [
   },
 ];
 
-program
-  .command('User:Create', 'User create actions from terminal')
-  .action((action) => {
-    if (action === 'user:create') {
-      prompt(questions).then((user) => {
-        const User = new UserModel(user);
-        User.save()
-          .then(u => console.log(`user saved successfully ${u.id}`))
-          .catch(e => console.error(e));
-      });
-    }
-  });
+const createUser = async () => {
+  const userObj = await prompt(createPrompts);
+  // make the user active & verified if created from script
+  userObj.activeFlag = true;
+  userObj.verifiedFlag = true;
+  const user = new User(userObj);
+  await user.save();
+  console.log(`user saved successfully ${user.id}`);
+};
 
-program
-  .command('User:List', 'User list actions from terminal')
-  .option('-S, --select', 'User select fields')
-  .option('-i, --id', 'User id')
-  .option('-e, --email', 'User email')
-  .option('-s, --skip', 'User skip records')
-  .option('-l, --limit', 'User limit records')
-  .action((action) => {
-    if (action === 'user:list') {
-      console.log(process.argv);
-    }
-  })
-  .on('--help', () => {
-    console.log('');
-    console.log('user:list');
-    console.log(' -S, --select   - User select fields');
-    console.log(' -i, --id       - User id');
-    console.log(' -e, --email    - User email');
-    console.log(' -s, --skip     - User skip records');
-    console.log(' -l, --limit    - User limit records');
-    console.log('');
-  })
-  .parse(process.argv);
-
+const findUser = async (id) => {
+  if (id) {
+    const user = await User.findById(id);
+    user.securedUser(User.secureFields);
+    console.log(user);
+  }
+};

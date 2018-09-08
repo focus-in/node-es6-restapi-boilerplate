@@ -4,7 +4,6 @@ const UserModel = require('@modules/user').model; // eslint-disable-line
 module.exports.init = (passport) => {
   // Serialize auth user
   passport.serializeUser((user, next) => {
-    console.log('user auth token');
     next(null, user._id);
   });
 

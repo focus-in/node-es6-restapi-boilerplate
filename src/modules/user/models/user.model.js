@@ -8,6 +8,7 @@ const UserSchema = require('./schema/user.schema');
 
 require('module-alias/register');
 const { auth } = require('@configs/config').env; // eslint-disable-line
+const { event } = require('@system'); // eslint-disable-line
 
 /**
  * Pre-save hook to hash password & set activation token for new users
@@ -15,6 +16,9 @@ const { auth } = require('@configs/config').env; // eslint-disable-line
  * @return {Function} next callback function
  */
 UserSchema.pre('save', async function save(next) {
+  // NOTE: isNew field internally used my mongoose to set it to false in post save
+  // NOTE: for our reference use custom wasNew field
+  this.wasNew = this.isNew;
   // hash password before save
   if (this.password && this.isModified('password')) {
     this.password = this.hashPassword(this.password);
@@ -24,6 +28,11 @@ UserSchema.pre('save', async function save(next) {
     // update the active flag
     this.activate.token = await randomNumber(100000, 999999);
     this.activate.expireAt = moment().add(1, 'days');
+  }
+  // check verified flag for user notification
+  if (this.isModified('verifiedFlag') && this.verifiedFlag) {
+    // TODO: user verified event
+    // event.emit('user-verified', this);
   }
   return next();
 });
@@ -138,12 +147,6 @@ UserSchema.statics = {
  * Use methods with user object
  */
 UserSchema.method({
-  // withCreatedBy: (selectFields) => {
-  //   const _this = this;
-  //   this.populate('createdBy')
-  //   // this.deepPopulate('childs.subject.data', callback);
-  // },
-
   /**
    * Remove secured fields from user object
    *

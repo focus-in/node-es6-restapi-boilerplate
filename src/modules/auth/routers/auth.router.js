@@ -1,9 +1,8 @@
 const passport = require('passport');
-const validate = require('express-validation');
-const AuthController = require('../controllers/auth.controller');
-const AuthValidator = require('../validators/auth.validator');
+const controller = require('../controllers/auth.controller');
+const validator = require('../validators/auth.validator');
 
-module.exports = (router) => {
+module.exports = (router, validate) => {
   router.route('/auth/signup')
     /**
      * @api {post} /auth/signup Signup user
@@ -31,7 +30,7 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized  Only authenticated users can access the data
      * @apiError (Forbidden 403)     Forbidden     Only admins can access the data
      */
-    .post(validate(AuthValidator.signup), AuthController.signup);
+    .post(validate(validator.signup), controller.signup);
 
   router.route('/auth/signin')
     /**
@@ -58,7 +57,7 @@ module.exports = (router) => {
      * @apiError (Unauthorized 401)  Unauthorized     Only authenticated users can create the data
      * @apiError (Forbidden 403)     Forbidden        Only admins can create the data
      */
-    .post(validate(AuthValidator.signin), AuthController.signin);
+    .post(validate(validator.signin), controller.signin);
 
   router.route('/auth/activate/:token')
     /**
@@ -76,7 +75,7 @@ module.exports = (router) => {
      * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
      * @apiError (Unauthorized 401)  Unauthorized     Incorrect email or refreshToken
      */
-    .get(validate(AuthValidator.activate), AuthController.activate);
+    .get(validate(validator.activate), controller.activate);
 
   router.route('/auth/reactivate')
     /**
@@ -94,7 +93,7 @@ module.exports = (router) => {
      * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
      * @apiError (Unauthorized 401)  Unauthorized     Incorrect email or refreshToken
      */
-    .post(validate(AuthValidator.reactivate), AuthController.reactivate);
+    .post(validate(validator.reactivate), controller.reactivate);
 
   router.route('/auth/refresh')
     /**
@@ -116,7 +115,7 @@ module.exports = (router) => {
      * @apiError (Bad Request 400)  ValidationError  Some parameters may contain invalid values
      * @apiError (Unauthorized 401)  Unauthorized     Incorrect email or refreshToken
      */
-    .post(validate(AuthValidator.refresh), AuthController.refresh);
+    .post(validate(validator.refresh), controller.refresh);
 
   router.route('/auth/forgot')
     /**
@@ -134,7 +133,7 @@ module.exports = (router) => {
      * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
      * @apiError (Unauthorized 401)  Unauthorized     Incorrect email
      */
-    .post(validate(AuthValidator.forgot), AuthController.forgot);
+    .post(validate(validator.forgot), controller.forgot);
 
   router.route('/auth/reset')
     /**
@@ -153,7 +152,7 @@ module.exports = (router) => {
      * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
      * @apiError (Unauthorized 401)  Unauthorized     Incorrect resetToken
      */
-    .post(validate(AuthValidator.reset), AuthController.reset);
+    .post(validate(validator.reset), controller.reset);
 
   router.route('/auth/google')
     /**
@@ -172,7 +171,7 @@ module.exports = (router) => {
     .get(passport.authenticate('google', { scope: ['email'] }));
 
   router.route('/auth/google/callback')
-    .get(passport.authenticate('google'), AuthController.oauth);
+    .get(passport.authenticate('google'), controller.oauth);
 
   router.route('/auth/facebook')
     /**
@@ -191,7 +190,7 @@ module.exports = (router) => {
     .get(passport.authenticate('facebook', { scope: 'email' }));
 
   router.route('/auth/facebook/callback')
-    .get(passport.authenticate('facebook'), AuthController.oauth);
+    .get(passport.authenticate('facebook'), controller.oauth);
 
   router.route('/auth/twitter')
     /**
@@ -210,7 +209,27 @@ module.exports = (router) => {
     .get(passport.authenticate('twitter', { session: false }));
 
   router.route('/auth/twitter/callback')
-    .get(passport.authenticate('twitter'), AuthController.oauth);
+    .get(passport.authenticate('twitter'), controller.oauth);
+
+  router.route('/auth/linkedin')
+    /**
+     * @api {post} /auth/linkedin Google oAuth login
+     * @apiDescription Login with your linkedin credentials works direct url in browser
+     * @apiVersion 0.0.1
+     * @apiName GoogleOauth
+     * @apiGroup Auth
+     * @apiPermission public
+     *
+     * @apiSuccess {String}  html User oauth signin success page
+     *
+     * @apiError (Bad Request 400)   ValidationError  Some parameters may contain invalid values
+     * @apiError (Unauthorized 401)  Unauthorized     Incorrect resetToken
+     */
+    // r_fullprofile r_emailaddress r_contactinfo
+    .get(passport.authenticate('linkedin', { scope: ['r_basicprofile', 'r_emailaddress'] }));
+
+  router.route('/auth/linkedin/callback')
+    .get(passport.authenticate('linkedin'), controller.oauth);
 
   return router;
 };

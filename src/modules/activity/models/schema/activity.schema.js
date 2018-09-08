@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const mongooseDelete = require('mongoose-delete');
+const mongooseIdValidator = require('mongoose-id-validator');
 
 /**
  * Activity Schema
@@ -18,6 +19,7 @@ const ActivitySchema = new mongoose.Schema({
   action: {
     id: { type: mongoose.Schema.Types.ObjectId },
     module: { type: String },
+    data: { type: mongoose.Schema.Types.Mixed },
   },
   message: {
     type: String,
@@ -36,6 +38,11 @@ const ActivitySchema = new mongoose.Schema({
  * Add mongoose soft delete plugin with deleted user & time stamp
  */
 ActivitySchema.plugin(mongooseDelete, { deletedBy: true, deletedAt: true });
+
+/**
+ * Ref schema id validator
+ */
+ActivitySchema.plugin(mongooseIdValidator);
 
 /**
  * export the schema

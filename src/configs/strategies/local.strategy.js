@@ -14,16 +14,21 @@ module.exports = (passport) => {
         if (!user || !user.comparePassword(password)) {
           return next(new Error('Invalid username or password'), false);
         }
+        let err; // define error variable
         if (user.activeFlag !== true) {
           // HACK: return the activation url for dev environment
           let devHint = '';
           if (process.env.NODE_ENV === 'development') {
             devHint = ` @dev hint url http://localhost:3000/api/v1/auth/activate/${user.activate.token}`;
           }
-          return next(new Error(`User not active, please check your registered email to activate${devHint}`), false);
+          err = new Error(`User not active, please check your registered email to activate${devHint}`);
+          err.status = 401; // UNAUTHORIZED
+          return next(err, false);
         }
-        if (user.deleteFlag) {
-          return next(new Error('Cannot login, please contact admin for more details'), false);
+        if (user.deleted) {
+          err = new Error('Cannot login, please contact admin for more details');
+          err.status = 403; // FORBIDDEN
+          return next(err, false);
         }
         return next(null, user);
       }, (err) => {
