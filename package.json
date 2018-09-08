@@ -21,7 +21,7 @@
     "test:watch": "NODE_ENV=test mocha --watch src/api/tests/unit",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "postcoverage": "opn coverage/lcov-report/index.html",
-    "script": "node src/core/scripts/core.script.js",
+    "script": "node src/commander.js",
     "docs": "apidoc -i src -o docs",
     "postdocs": "opn docs/index.html"
   },
