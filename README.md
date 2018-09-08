@@ -6,12 +6,12 @@ Start coding fast with stright forwarded application flow and build in user & au
 
 
 ## Getting Started
-------
+
 You can clone & follow the below sections to make it use of your own.
 
 
 ## Pre-requisites
-------
+
 Make sure you have installed all of the following prerequisites on your development machine:
 
 - [NodeJS](https://nodejs.org/en/) (v8.11.4)
@@ -21,7 +21,7 @@ Make sure you have installed all of the following prerequisites on your developm
 
 
 ## Dependencies
-------
+
 Some popular dependencies used to build the boileplate.
 
 | Dependency  | Description |
@@ -59,12 +59,12 @@ Some optional packages to install globally in your dev machine.
 
 | Dependency  | Installation |
 |-------------|--------------|
-| EsLint            | `yarn global add eslint`            |
-| Nodemon           | `yarn global add nodemon`           |
+| EsLint  | `yarn global add eslint`  |
+| Nodemon | `yarn global add nodemon` |
 
 
 ## Installation
-------
+
 - Clone the repository from github as your project name
 ```shell
 git clone https://github.com/focus-io/node-es6-restapi-boilerplate.git project-name
@@ -78,7 +78,7 @@ yarn install
 
 
 ## Configuration
-------
+
 - Create environment file
 ```shell
 mv .env.example .env
@@ -98,7 +98,7 @@ yarn start
 
 
 ## Usage
-------
+
 
 - To create user
 ```shell
@@ -107,7 +107,7 @@ yarn scripts user create
 
 
 ## Docs & Lint
-------
+
 - Generate api docs by running
 ```shell
 yarn docs
@@ -125,7 +125,7 @@ yarn lint:fix
 
 
 ## Test & Coverage
-------
+
 - Unit Test
 ```shell
 yarn test:unit
@@ -148,38 +148,38 @@ yarn coverage
 
 
 ## Deployment
-------
+
 YTC
 
 
 ## Contribution
-------
+
 We welcome any contribution you make [contributors guidelines](https://help.github.com/articles/setting-guidelines-for-repository-contributors/).
 
 
 ## Versioning
-------
+
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [versions](https://github.com/focus-io/node-es6-restapi-boilerplate/releases) on this repository.
 
 
 ## Authors
-------
+
 * [keviveks](https://github.com/keviveks)
 
 
 ## License
-------
+
 This project is licensed under the MIT License - see the LICENSE.md file for details
 
 
 ## Acknowledgement
-------
+
 Inspirations
 - [KunalKapadia/express-mongoose-es6-rest-api](https://github.com/KunalKapadia/express-mongoose-es6-rest-api)
 - [danielfsousa/express-rest-es2017-boilerplate](https://github.com/danielfsousa/express-rest-es2017-boilerplate)
 
 ## Todo
-------
+
 - [ ] Unit Test
 - [ ] Test System module
 - [ ] Seeder
