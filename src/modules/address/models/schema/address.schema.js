@@ -44,7 +44,7 @@ const AddressSchema = new mongoose.Schema({
   lat: {
     type: Number,
   },
-  long: {
+  lng: {
     type: Number,
   },
   tag: {

@@ -89,7 +89,7 @@ exports.profile = async (req, res, next) => {
     // remove all the secured fields from user object
     req.user.securedUser(User.secureFields);
     // return the user data
-    return res.json(req.user);
+    return res.send(req.user);
   } catch (e) {
     return next(e);
   }

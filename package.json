@@ -16,7 +16,7 @@
     "lint:fix": "yarn lint -- --fix",
     "lint:watch": "yarn lint -- --watch",
     "test": "NODE_ENV=test nyc --reporter=html --reporter=text mocha --timeout 20000 --recursive src/modules/*/tests/*/",
-    "test:unit": "NODE_ENV=test mocha src/modules/*/tests/unit",
+    "test:unit": "NODE_ENV=test mocha src/modules/user/tests/unit",
     "test:integration": "NODE_ENV=test mocha --timeout 20000 src/modules/*/tests/integration",
     "test:watch": "NODE_ENV=test mocha --watch src/api/tests/unit",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
@@ -100,6 +100,7 @@
     "apidoc": "^0.17.6",
     "chai": "^4.1.2",
     "coveralls": "^3.0.2",
+    "data-driven": "^1.4.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.12.0",
@@ -109,8 +110,10 @@
     "nodemon": "^1.17.5",
     "nyc": "^12.0.2",
     "opn-cli": "^3.1.0",
+    "rewire": "^4.0.1",
     "sinon": "^6.1.4",
     "sinon-chai": "^3.2.0",
+    "sinon-mongoose": "^2.2.1",
     "supertest": "^3.1.0"
   }
 }
